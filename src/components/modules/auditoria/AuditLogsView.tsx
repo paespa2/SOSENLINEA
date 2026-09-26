@@ -165,18 +165,18 @@ export const AuditLogsView: React.FC = () => {
         </div>
       </div>
 
-      {/* Tabla de Logs */}
-      <div className="data-table-container">
-        <table className="data-table">
+      {/* Tabla de Logs Responsiva */}
+      <div className="table-responsive-wrapper card" style={{ padding: 0 }}>
+        <table className="data-table" style={{ width: "100%", borderCollapse: "collapse", minWidth: "950px" }}>
           <thead>
             <tr>
-              <th>Timestamp (UTC)</th>
-              <th>Acción</th>
-              <th>Módulo</th>
-              <th>Usuario & Rol</th>
-              <th>Registro Afectado</th>
-              <th>Detalle de la Operación</th>
-              <th>IP Origen</th>
+              <th style={{ minWidth: "150px" }}>Timestamp (UTC)</th>
+              <th style={{ minWidth: "110px" }}>Acción</th>
+              <th style={{ minWidth: "110px" }}>Módulo</th>
+              <th style={{ minWidth: "160px" }}>Usuario & Rol</th>
+              <th style={{ minWidth: "160px" }}>Registro Afectado</th>
+              <th style={{ minWidth: "260px" }}>Detalle de la Operación</th>
+              <th style={{ minWidth: "100px" }}>IP Origen</th>
             </tr>
           </thead>
           <tbody>

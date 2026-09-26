@@ -629,12 +629,12 @@ export const CotizacionesView: React.FC = () => {
                 <div style={{ fontSize: "0.78rem", fontWeight: 700, color: "var(--primary)", marginBottom: "0.5rem" }}>
                   + Añadir Ítem de Costo Extra:
                 </div>
-                <div style={{ display: "grid", gridTemplateColumns: "2.5fr 1fr 1fr 1fr 1.5fr auto", gap: "0.5rem", alignItems: "center" }}>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", alignItems: "center" }}>
                   <input
                     type="text"
                     placeholder="Descripción del costo extra..."
                     className="input-field"
-                    style={{ fontSize: "0.8rem", padding: "0.4rem 0.6rem" }}
+                    style={{ fontSize: "0.8rem", padding: "0.4rem 0.6rem", flex: "2 1 200px" }}
                     value={newExtraItem.descripcion}
                     onChange={(e) => setNewExtraItem({ ...newExtraItem, descripcion: e.target.value })}
                   />
@@ -642,7 +642,7 @@ export const CotizacionesView: React.FC = () => {
                     type="text"
                     placeholder="Ambiente / Zona"
                     className="input-field"
-                    style={{ fontSize: "0.8rem", padding: "0.4rem 0.6rem" }}
+                    style={{ fontSize: "0.8rem", padding: "0.4rem 0.6rem", flex: "1 1 120px" }}
                     value={newExtraItem.ambiente}
                     onChange={(e) => setNewExtraItem({ ...newExtraItem, ambiente: e.target.value })}
                   />
@@ -650,7 +650,7 @@ export const CotizacionesView: React.FC = () => {
                     type="number"
                     placeholder="Cant."
                     className="input-field"
-                    style={{ fontSize: "0.8rem", padding: "0.4rem 0.6rem" }}
+                    style={{ fontSize: "0.8rem", padding: "0.4rem 0.6rem", flex: "0 1 70px" }}
                     value={newExtraItem.cantidad}
                     min={1}
                     onChange={(e) => setNewExtraItem({ ...newExtraItem, cantidad: Number(e.target.value) || 1 })}
@@ -659,7 +659,7 @@ export const CotizacionesView: React.FC = () => {
                     type="text"
                     placeholder="Unidad (Und, m, gl)"
                     className="input-field"
-                    style={{ fontSize: "0.8rem", padding: "0.4rem 0.6rem" }}
+                    style={{ fontSize: "0.8rem", padding: "0.4rem 0.6rem", flex: "1 1 90px" }}
                     value={newExtraItem.unidad}
                     onChange={(e) => setNewExtraItem({ ...newExtraItem, unidad: e.target.value })}
                   />
@@ -667,7 +667,7 @@ export const CotizacionesView: React.FC = () => {
                     type="number"
                     placeholder="Valor Unitario ($)"
                     className="input-field"
-                    style={{ fontSize: "0.8rem", padding: "0.4rem 0.6rem" }}
+                    style={{ fontSize: "0.8rem", padding: "0.4rem 0.6rem", flex: "1 1 120px" }}
                     value={newExtraItem.valorUnitario || ""}
                     onChange={(e) => setNewExtraItem({ ...newExtraItem, valorUnitario: Number(e.target.value) || 0 })}
                   />
@@ -675,7 +675,7 @@ export const CotizacionesView: React.FC = () => {
                     type="button"
                     onClick={handleAddExtraItem}
                     className="btn btn-primary btn-sm"
-                    style={{ padding: "0.4rem 0.75rem" }}
+                    style={{ padding: "0.4rem 0.85rem", whiteSpace: "nowrap" }}
                   >
                     <Plus size={14} /> Añadir
                   </button>
@@ -683,17 +683,17 @@ export const CotizacionesView: React.FC = () => {
               </div>
 
               {/* Tabla de Ítems Existentes */}
-              <div className="data-table-container" style={{ maxHeight: "240px", overflowY: "auto" }}>
-                <table className="data-table">
+              <div className="table-responsive-wrapper" style={{ maxHeight: "240px", overflowY: "auto", border: "1px solid var(--border-color)", borderRadius: "var(--radius-md)" }}>
+                <table className="data-table" style={{ width: "100%", borderCollapse: "collapse", minWidth: "550px" }}>
                   <thead>
                     <tr>
-                      <th>Descripción</th>
-                      <th>Ambiente</th>
-                      <th>Cant.</th>
-                      <th>Unidad</th>
-                      <th>Valor Unit.</th>
-                      <th>Total</th>
-                      <th style={{ textAlign: "right" }}>Acción</th>
+                      <th style={{ minWidth: "160px" }}>Descripción</th>
+                      <th style={{ minWidth: "110px" }}>Ambiente</th>
+                      <th style={{ minWidth: "60px" }}>Cant.</th>
+                      <th style={{ minWidth: "70px" }}>Unidad</th>
+                      <th style={{ minWidth: "110px" }}>Valor Unit.</th>
+                      <th style={{ minWidth: "110px" }}>Total</th>
+                      <th className="table-actions-sticky" style={{ minWidth: "70px", textAlign: "right" }}>Acción</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -712,7 +712,7 @@ export const CotizacionesView: React.FC = () => {
                           <td>{item.unidad}</td>
                           <td className="currency-text">{formatCOP(item.valorUnitario)}</td>
                           <td className="currency-text" style={{ fontWeight: 700 }}>{formatCOP(item.valorTotal)}</td>
-                          <td style={{ textAlign: "right" }}>
+                          <td className="table-actions-sticky" style={{ textAlign: "right" }}>
                             <button
                               type="button"
                               onClick={() => handleRemoveExtraItem(item.id)}

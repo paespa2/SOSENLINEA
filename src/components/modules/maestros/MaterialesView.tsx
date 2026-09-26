@@ -146,20 +146,20 @@ export const MaterialesView: React.FC = () => {
       </div>
 
       {/* Tabla de Materiales */}
-      <div className="data-table-container">
-        <table className="data-table">
+      <div className="table-responsive-wrapper card" style={{ padding: 0 }}>
+        <table className="data-table" style={{ width: "100%", borderCollapse: "collapse", minWidth: "900px" }}>
           <thead>
             <tr>
-              <th>Código</th>
-              <th>Material / Insumo</th>
-              <th>Categoría</th>
-              <th>Unidad</th>
-              <th>Stock Actual</th>
-              <th>Stock Mínimo</th>
-              <th>Precio Unitario</th>
-              <th>Ubicación</th>
-              <th>Estado</th>
-              <th style={{ textAlign: "right" }}>Acción</th>
+              <th style={{ minWidth: "90px" }}>Código</th>
+              <th style={{ minWidth: "220px" }}>Material / Insumo</th>
+              <th style={{ minWidth: "110px" }}>Categoría</th>
+              <th style={{ minWidth: "80px" }}>Unidad</th>
+              <th style={{ minWidth: "95px" }}>Stock Actual</th>
+              <th style={{ minWidth: "95px" }}>Stock Mínimo</th>
+              <th style={{ minWidth: "125px" }}>Precio Unitario</th>
+              <th style={{ minWidth: "120px" }}>Ubicación</th>
+              <th style={{ minWidth: "90px" }}>Estado</th>
+              <th className="table-actions-sticky" style={{ textAlign: "right", minWidth: "110px" }}>Acción</th>
             </tr>
           </thead>
           <tbody>
@@ -182,9 +182,9 @@ export const MaterialesView: React.FC = () => {
                 <td>
                   <StatusBadge status={m.estado} size="sm" />
                 </td>
-                <td style={{ textAlign: "right" }}>
+                <td className="table-actions-sticky" style={{ textAlign: "right" }}>
                   {can("edit") && (
-                    <button onClick={() => handleStockAdjust(m.id, m.stockActual)} className="btn btn-secondary btn-sm" style={{ padding: "0.25rem 0.5rem", fontSize: "0.72rem" }}>
+                    <button onClick={() => handleStockAdjust(m.id, m.stockActual)} className="btn btn-secondary btn-sm" style={{ padding: "0.25rem 0.5rem", fontSize: "0.72rem", whiteSpace: "nowrap" }}>
                       Ajustar Stock
                     </button>
                   )}
@@ -213,7 +213,7 @@ export const MaterialesView: React.FC = () => {
         }
       >
         <form onSubmit={handleSave} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: "1rem" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: "1rem" }}>
             <div className="input-group">
               <label className="input-label">Código *</label>
               <input
@@ -238,7 +238,7 @@ export const MaterialesView: React.FC = () => {
             </div>
           </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: "1rem" }}>
             <div className="input-group">
               <label className="input-label">Categoría</label>
               <select
@@ -266,7 +266,7 @@ export const MaterialesView: React.FC = () => {
             </div>
           </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "0.75rem" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))", gap: "0.75rem" }}>
             <div className="input-group">
               <label className="input-label">Stock Inicial</label>
               <input

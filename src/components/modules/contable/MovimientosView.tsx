@@ -225,19 +225,19 @@ export const MovimientosView: React.FC<MovimientosViewProps> = ({ initialType = 
         </div>
       </div>
 
-      {/* Tabla de Movimientos */}
-      <div className="data-table-container">
-        <table className="data-table">
+      {/* Tabla de Movimientos Responsiva */}
+      <div className="table-responsive-wrapper card" style={{ padding: 0 }}>
+        <table className="data-table" style={{ width: "100%", borderCollapse: "collapse", minWidth: "980px" }}>
           <thead>
             <tr>
-              <th>Comprobante</th>
-              <th>Fecha</th>
-              <th>Cuenta Contable</th>
-              <th>Concepto</th>
-              <th>Tercero / Contratista</th>
-              <th>Monto</th>
-              <th>Estado</th>
-              <th style={{ textAlign: "right" }}>Acciones</th>
+              <th style={{ minWidth: "120px" }}>Comprobante</th>
+              <th style={{ minWidth: "110px" }}>Fecha</th>
+              <th style={{ minWidth: "160px" }}>Cuenta Contable</th>
+              <th style={{ minWidth: "220px" }}>Concepto</th>
+              <th style={{ minWidth: "180px" }}>Tercero / Contratista</th>
+              <th style={{ minWidth: "130px" }}>Monto</th>
+              <th style={{ minWidth: "95px" }}>Estado</th>
+              <th className="table-actions-sticky" style={{ textAlign: "right", minWidth: "130px" }}>Acciones</th>
             </tr>
           </thead>
           <tbody>
@@ -271,14 +271,14 @@ export const MovimientosView: React.FC<MovimientosViewProps> = ({ initialType = 
                   <td>
                     <StatusBadge status={m.estado} size="sm" />
                   </td>
-                  <td style={{ textAlign: "right" }}>
+                  <td className="table-actions-sticky" style={{ textAlign: "right" }}>
                     <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: "0.35rem" }}>
                       {m.estado !== "Conciliado" && can("edit") && (
                         <button
                           onClick={() => handleAdvanceStatus(m.id, m.estado)}
                           className="btn btn-secondary btn-sm"
                           title={m.estado === "Borrador" ? "Avanzar a Registrado" : "Conciliar con banco"}
-                          style={{ fontSize: "0.72rem", padding: "0.25rem 0.5rem" }}
+                          style={{ fontSize: "0.72rem", padding: "0.25rem 0.5rem", whiteSpace: "nowrap" }}
                         >
                           <CheckCircle2 size={13} color={m.estado === "Borrador" ? "#3b82f6" : "#059669"} />
                           {m.estado === "Borrador" ? "Registrar" : "Conciliar"}

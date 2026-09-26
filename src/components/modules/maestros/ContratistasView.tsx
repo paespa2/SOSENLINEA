@@ -216,18 +216,18 @@ export const ContratistasView: React.FC = () => {
         </div>
       </div>
 
-      {/* Tabla de Datos */}
-      <div className="data-table-container">
-        <table className="data-table">
+      {/* Tabla de Datos Responsiva */}
+      <div className="table-responsive-wrapper card" style={{ padding: 0 }}>
+        <table className="data-table" style={{ width: "100%", borderCollapse: "collapse", minWidth: "900px" }}>
           <thead>
             <tr>
-              <th>NIT (DIAN)</th>
-              <th>Nombre / Razón Social</th>
-              <th>Tipo</th>
-              <th>Contacto & Ubicación</th>
-              <th>Datos Bancarios</th>
-              <th>Estado</th>
-              <th style={{ textAlign: "right" }}>Acciones</th>
+              <th style={{ minWidth: "130px" }}>NIT (DIAN)</th>
+              <th style={{ minWidth: "220px" }}>Nombre / Razón Social</th>
+              <th style={{ minWidth: "110px" }}>Tipo</th>
+              <th style={{ minWidth: "180px" }}>Contacto & Ubicación</th>
+              <th style={{ minWidth: "160px" }}>Datos Bancarios</th>
+              <th style={{ minWidth: "90px" }}>Estado</th>
+              <th className="table-actions-sticky" style={{ textAlign: "right", minWidth: "110px" }}>Acciones</th>
             </tr>
           </thead>
           <tbody>
@@ -293,7 +293,7 @@ export const ContratistasView: React.FC = () => {
                   <td>
                     <StatusBadge status={c.activo ? "Activo" : "Inactivo"} size="sm" />
                   </td>
-                  <td style={{ textAlign: "right" }}>
+                  <td className="table-actions-sticky" style={{ textAlign: "right" }}>
                     <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: "0.4rem" }}>
                       {can("edit") && (
                         <button

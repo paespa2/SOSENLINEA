@@ -15,6 +15,7 @@ import {
   Phone,
   Mail,
   Calendar,
+  MessageCircle,
 } from "lucide-react";
 
 export const ClientesView: React.FC = () => {
@@ -132,52 +133,85 @@ export const ClientesView: React.FC = () => {
         </div>
       </div>
 
-      {/* Tabla de Clientes */}
-      <div className="data-table-container">
-        <table className="data-table">
+      {/* Tabla de Clientes Responsiva */}
+      <div className="table-responsive-wrapper card" style={{ padding: 0 }}>
+        <table className="data-table" style={{ width: "100%", borderCollapse: "collapse", minWidth: "950px" }}>
           <thead>
             <tr>
-              <th>Documento / NIT</th>
-              <th>Nombre Completo</th>
-              <th>Tipo</th>
-              <th>Contacto</th>
-              <th>Inmueble / Referencia</th>
-              <th>Canon / Valor Contrato</th>
-              <th>Fecha Contrato</th>
-              <th>Estado</th>
+              <th style={{ minWidth: "120px" }}>Documento / NIT</th>
+              <th style={{ minWidth: "180px" }}>Nombre Completo</th>
+              <th style={{ minWidth: "110px" }}>Tipo</th>
+              <th style={{ minWidth: "160px" }}>Contacto</th>
+              <th style={{ minWidth: "200px" }}>Inmueble / Referencia</th>
+              <th style={{ minWidth: "140px" }}>Canon / Valor Contrato</th>
+              <th style={{ minWidth: "110px" }}>Fecha Contrato</th>
+              <th style={{ minWidth: "90px" }}>Estado</th>
+              <th className="table-actions-sticky" style={{ textAlign: "right", minWidth: "110px" }}>Acción</th>
             </tr>
           </thead>
           <tbody>
-            {filtered.map((cli) => (
-              <tr key={cli.id}>
-                <td style={{ fontFamily: "var(--font-mono)", fontWeight: 700, color: "var(--primary)" }}>{cli.documento}</td>
-                <td style={{ fontWeight: 700 }}>{cli.nombre}</td>
-                <td>
-                  <span
-                    style={{
-                      padding: "0.15rem 0.5rem",
-                      borderRadius: "6px",
-                      fontSize: "0.75rem",
-                      fontWeight: 700,
-                      background: cli.tipo === "Propietario" ? "rgba(5, 150, 105, 0.1)" : "rgba(37, 99, 235, 0.1)",
-                      color: cli.tipo === "Propietario" ? "#047857" : "#1d4ed8",
-                    }}
-                  >
-                    {cli.tipo}
-                  </span>
-                </td>
-                <td style={{ fontSize: "0.8rem" }}>
-                  <div>{cli.telefono}</div>
-                  <div style={{ fontSize: "0.725rem", color: "var(--text-muted)" }}>{cli.email}</div>
-                </td>
-                <td style={{ fontSize: "0.85rem", fontWeight: 500 }}>{cli.inmuebleReferencia}</td>
-                <td className="currency-text" style={{ fontWeight: 700 }}>{formatCOP(cli.canonOValor)}</td>
-                <td style={{ fontSize: "0.785rem" }}>{formatDateCO(cli.fechaContrato)}</td>
-                <td>
-                  <StatusBadge status={cli.estado} size="sm" />
-                </td>
-              </tr>
-            ))}
+            {filtered.map((cli) => {
+              const rawTel = (cli.telefono || "").replace(/[^0-9]/g, "");
+              const phone = rawTel.startsWith("57") ? rawTel : `57${rawTel}`;
+              const text = encodeURIComponent(`Hola ${cli.nombre}, le saludamos de SOSENLINEA respecto a su inmueble (${cli.inmuebleReferencia}).`);
+
+              return (
+                <tr key={cli.id}>
+                  <td style={{ fontFamily: "var(--font-mono)", fontWeight: 700, color: "var(--primary)" }}>{cli.documento}</td>
+                  <td style={{ fontWeight: 700 }}>{cli.nombre}</td>
+                  <td>
+                    <span
+                      style={{
+                        padding: "0.15rem 0.5rem",
+                        borderRadius: "6px",
+                        fontSize: "0.75rem",
+                        fontWeight: 700,
+                        background: cli.tipo === "Propietario" ? "rgba(5, 150, 105, 0.1)" : "rgba(37, 99, 235, 0.1)",
+                        color: cli.tipo === "Propietario" ? "#047857" : "#1d4ed8",
+                      }}
+                    >
+                      {cli.tipo}
+                    </span>
+                  </td>
+                  <td style={{ fontSize: "0.8rem" }}>
+                    <div style={{ fontWeight: 600 }}>{cli.telefono}</div>
+                    <div style={{ fontSize: "0.725rem", color: "var(--text-muted)" }}>{cli.email}</div>
+                  </td>
+                  <td style={{ fontSize: "0.85rem", fontWeight: 500 }}>{cli.inmuebleReferencia}</td>
+                  <td className="currency-text" style={{ fontWeight: 700 }}>{formatCOP(cli.canonOValor)}</td>
+                  <td style={{ fontSize: "0.785rem" }}>{formatDateCO(cli.fechaContrato)}</td>
+                  <td>
+                    <StatusBadge status={cli.estado} size="sm" />
+                  </td>
+                  <td className="table-actions-sticky" style={{ textAlign: "right" }}>
+                    {rawTel ? (
+                      <button
+                        type="button"
+                        onClick={() => window.open(`https://wa.me/${phone}?text=${text}`, "_blank")}
+                        className="btn btn-sm"
+                        style={{
+                          background: "#16a34a",
+                          color: "#fff",
+                          borderColor: "#16a34a",
+                          fontSize: "0.72rem",
+                          padding: "0.25rem 0.55rem",
+                          display: "inline-flex",
+                          alignItems: "center",
+                          gap: "0.3rem",
+                          whiteSpace: "nowrap",
+                        }}
+                        title="Contactar vía WhatsApp"
+                      >
+                        <MessageCircle size={13} />
+                        WhatsApp
+                      </button>
+                    ) : (
+                      <span style={{ fontSize: "0.72rem", color: "var(--text-muted)" }}>-</span>
+                    )}
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>

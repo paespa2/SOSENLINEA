@@ -88,7 +88,7 @@ export const ImpresionesView: React.FC = () => {
             <select
               value={activeOrden ? String(activeOrden.idRegistro) : ""}
               onChange={(e) => setSelectedId(e.target.value)}
-              style={{ padding: "0.45rem 0.85rem", borderRadius: "6px", border: "1px solid var(--border-color)", fontSize: "0.85rem", minWidth: "360px", background: "var(--bg-card)", color: "var(--text-main)" }}
+              style={{ padding: "0.45rem 0.85rem", borderRadius: "6px", border: "1px solid var(--border-color)", fontSize: "0.85rem", flex: "1 1 280px", maxWidth: "100%", background: "var(--bg-card)", color: "var(--text-main)" }}
             >
               {reportes.map((r) => (
                 <option key={r.idRegistro} value={String(r.idRegistro)}>
@@ -102,7 +102,7 @@ export const ImpresionesView: React.FC = () => {
             <select
               value={activeCuenta ? activeCuenta.id : ""}
               onChange={(e) => setSelectedId(e.target.value)}
-              style={{ padding: "0.45rem 0.85rem", borderRadius: "6px", border: "1px solid var(--border-color)", fontSize: "0.85rem", minWidth: "360px", background: "var(--bg-card)", color: "var(--text-main)" }}
+              style={{ padding: "0.45rem 0.85rem", borderRadius: "6px", border: "1px solid var(--border-color)", fontSize: "0.85rem", flex: "1 1 280px", maxWidth: "100%", background: "var(--bg-card)", color: "var(--text-main)" }}
             >
               {cuentasCobro.map((c) => (
                 <option key={c.id} value={c.id}>
@@ -116,7 +116,7 @@ export const ImpresionesView: React.FC = () => {
             <select
               value={activeLlave ? activeLlave.id : ""}
               onChange={(e) => setSelectedId(e.target.value)}
-              style={{ padding: "0.45rem 0.85rem", borderRadius: "6px", border: "1px solid var(--border-color)", fontSize: "0.85rem", minWidth: "360px", background: "var(--bg-card)", color: "var(--text-main)" }}
+              style={{ padding: "0.45rem 0.85rem", borderRadius: "6px", border: "1px solid var(--border-color)", fontSize: "0.85rem", flex: "1 1 280px", maxWidth: "100%", background: "var(--bg-card)", color: "var(--text-main)" }}
             >
               {llaves.map((l) => (
                 <option key={l.id} value={l.id}>
@@ -130,7 +130,7 @@ export const ImpresionesView: React.FC = () => {
             <select
               value={activeEgreso ? activeEgreso.id : ""}
               onChange={(e) => setSelectedId(e.target.value)}
-              style={{ padding: "0.45rem 0.85rem", borderRadius: "6px", border: "1px solid var(--border-color)", fontSize: "0.85rem", minWidth: "360px", background: "var(--bg-card)", color: "var(--text-main)" }}
+              style={{ padding: "0.45rem 0.85rem", borderRadius: "6px", border: "1px solid var(--border-color)", fontSize: "0.85rem", flex: "1 1 280px", maxWidth: "100%", background: "var(--bg-card)", color: "var(--text-main)" }}
             >
               {egresos.map((e) => (
                 <option key={e.id} value={e.id}>

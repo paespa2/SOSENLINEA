@@ -176,20 +176,20 @@ export const CuentasCobroView: React.FC = () => {
         </div>
       </div>
 
-      {/* Tabla de Cuentas */}
-      <div className="data-table-container">
-        <table className="data-table">
+      {/* Tabla de Cuentas Responsiva */}
+      <div className="table-responsive-wrapper card" style={{ padding: 0 }}>
+        <table className="data-table" style={{ width: "100%", borderCollapse: "collapse", minWidth: "1050px" }}>
           <thead>
             <tr>
-              <th>No. Cuenta</th>
-              <th>Fecha / Vence</th>
-              <th>Cliente & NIT</th>
-              <th>Concepto</th>
-              <th>Valor Bruto</th>
-              <th>Retefuente (4%)</th>
-              <th>Valor Neto</th>
-              <th>Estado</th>
-              <th style={{ textAlign: "right" }}>Acciones</th>
+              <th style={{ minWidth: "120px" }}>No. Cuenta</th>
+              <th style={{ minWidth: "120px" }}>Fecha / Vence</th>
+              <th style={{ minWidth: "180px" }}>Cliente & NIT</th>
+              <th style={{ minWidth: "220px" }}>Concepto</th>
+              <th style={{ minWidth: "130px" }}>Valor Bruto</th>
+              <th style={{ minWidth: "130px" }}>Retefuente (4%)</th>
+              <th style={{ minWidth: "140px" }}>Valor Neto</th>
+              <th style={{ minWidth: "100px" }}>Estado</th>
+              <th className="table-actions-sticky" style={{ textAlign: "right", minWidth: "160px" }}>Acciones</th>
             </tr>
           </thead>
           <tbody>
@@ -222,13 +222,13 @@ export const CuentasCobroView: React.FC = () => {
                   <td>
                     <StatusBadge status={cc.estado} size="sm" />
                   </td>
-                  <td style={{ textAlign: "right" }}>
+                  <td className="table-actions-sticky" style={{ textAlign: "right" }}>
                     <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: "0.4rem" }}>
                       <button
                         onClick={() => handleOpenPrint(cc)}
                         className="btn btn-secondary btn-sm"
                         title="Ver Documento Imprimible"
-                        style={{ padding: "0.25rem 0.5rem" }}
+                        style={{ padding: "0.25rem 0.5rem", whiteSpace: "nowrap" }}
                       >
                         <Printer size={13} /> Formato
                       </button>
@@ -238,7 +238,7 @@ export const CuentasCobroView: React.FC = () => {
                           onClick={() => handleMarkPaid(cc.id)}
                           className="btn btn-success btn-sm"
                           title="Marcar como Pagada"
-                          style={{ padding: "0.25rem 0.5rem" }}
+                          style={{ padding: "0.25rem 0.5rem", whiteSpace: "nowrap" }}
                         >
                           <CheckCircle size={13} /> Pagada
                         </button>

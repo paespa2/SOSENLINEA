@@ -186,6 +186,7 @@ export const NitValidatorView: React.FC = () => {
             </span>
 
             <div
+              className="table-responsive-wrapper"
               style={{
                 marginTop: "0.5rem",
                 maxHeight: "220px",
@@ -194,7 +195,7 @@ export const NitValidatorView: React.FC = () => {
                 borderRadius: "var(--radius-md)",
               }}
             >
-              <table className="data-table" style={{ fontSize: "0.8rem" }}>
+              <table className="data-table" style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.8rem", minWidth: "320px" }}>
                 <thead>
                   <tr>
                     <th>NIT Original</th>

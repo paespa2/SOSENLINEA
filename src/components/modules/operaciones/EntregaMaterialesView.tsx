@@ -92,17 +92,17 @@ export const EntregaMaterialesView: React.FC = () => {
         </div>
       </div>
 
-      <div className="data-table-container">
-        <table className="data-table">
+      <div className="table-responsive-wrapper card" style={{ padding: 0 }}>
+        <table className="data-table" style={{ width: "100%", borderCollapse: "collapse", minWidth: "850px" }}>
           <thead>
             <tr>
-              <th>Fecha</th>
-              <th>Orden de Trabajo</th>
-              <th>Material Insumo</th>
-              <th>Cantidad</th>
-              <th>Receptor (Firma)</th>
-              <th>Cargo</th>
-              <th>Despachado Por</th>
+              <th style={{ minWidth: "110px" }}>Fecha</th>
+              <th style={{ minWidth: "140px" }}>Orden de Trabajo</th>
+              <th style={{ minWidth: "200px" }}>Material Insumo</th>
+              <th style={{ minWidth: "110px" }}>Cantidad</th>
+              <th style={{ minWidth: "160px" }}>Receptor (Firma)</th>
+              <th style={{ minWidth: "120px" }}>Cargo</th>
+              <th style={{ minWidth: "140px" }}>Despachado Por</th>
             </tr>
           </thead>
           <tbody>
