@@ -300,13 +300,13 @@ body {
   text-transform: uppercase;
   font-size: 0.72rem;
   letter-spacing: 0.05em;
-  padding: 0.85rem 1.1rem;
+  padding: 0.7rem 0.85rem;
   border-bottom: 1px solid var(--border-color);
   white-space: nowrap;
 }
 
 .data-table td {
-  padding: 0.85rem 1.1rem;
+  padding: 0.7rem 0.85rem;
   border-bottom: 1px solid var(--border-color);
   color: var(--text-main);
   vertical-align: middle;
@@ -325,22 +325,19 @@ body {
   border-bottom: none;
 }
 
-/* Columna de Acciones Flotante Fija (Sticky) a la Derecha */
+/* Columna de Acciones - Flujo continuo sin solapamientos ni ocultamiento de datos */
 .table-actions-sticky {
-  position: sticky !important;
-  right: 0 !important;
-  z-index: 10 !important;
-  box-shadow: -8px 0 14px -4px rgba(0, 0, 0, 0.12) !important;
-  background-color: var(--bg-card) !important;
+  white-space: nowrap;
+  vertical-align: middle;
+  background-color: var(--bg-card);
 }
 
 thead th.table-actions-sticky {
-  background-color: var(--neutral-50) !important;
-  z-index: 11 !important;
+  background-color: var(--neutral-50);
 }
 
 tbody tr:hover td.table-actions-sticky {
-  background-color: var(--neutral-50) !important;
+  background-color: var(--neutral-50);
 }
 
 /* Moneda y cifras numéricas */

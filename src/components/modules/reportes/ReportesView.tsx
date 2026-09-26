@@ -1660,15 +1660,15 @@ export const ReportesView: React.FC = () => {
         <table className="data-table">
           <thead>
             <tr>
-              <th style={{ minWidth: "120px" }}>No. Orden / Radicado</th>
-              <th style={{ minWidth: "135px" }}>Fecha / Último Actualizado</th>
-              <th style={{ minWidth: "180px" }}>Inmueble / Rutas</th>
-              <th style={{ minWidth: "160px" }}>Participantes & Identificación</th>
-              <th style={{ minWidth: "150px" }}>Técnicos & Contratista</th>
-              <th style={{ textAlign: "right", minWidth: "120px" }}>Total Cotizado</th>
-              <th style={{ minWidth: "105px" }}>Avance</th>
-              <th style={{ minWidth: "130px" }}>Estado Actual</th>
-              <th className="table-actions-sticky" style={{ textAlign: "right", width: "175px", minWidth: "175px" }}>
+              <th style={{ minWidth: "110px" }}>No. Orden / Radicado</th>
+              <th style={{ minWidth: "125px" }}>Fecha / Actualizado</th>
+              <th style={{ minWidth: "165px" }}>Inmueble / Rutas</th>
+              <th style={{ minWidth: "155px" }}>Participantes & Identificación</th>
+              <th style={{ minWidth: "140px" }}>Técnicos & Contratista</th>
+              <th style={{ textAlign: "right", minWidth: "115px" }}>Total Cotizado</th>
+              <th style={{ minWidth: "95px" }}>Avance</th>
+              <th style={{ minWidth: "135px" }}>Estado Actual</th>
+              <th className="table-actions-sticky" style={{ textAlign: "right", minWidth: "160px" }}>
                 Acciones
               </th>
             </tr>
@@ -1782,10 +1782,10 @@ export const ReportesView: React.FC = () => {
                       </span>
                     </div>
                   </td>
-                  <td>
+                  <td style={{ minWidth: "135px", whiteSpace: "nowrap" }}>
                     <StatusBadge status={r.estado} size="sm" />
                   </td>
-                  <td className="table-actions-sticky" style={{ textAlign: "right", width: "175px", minWidth: "175px" }}>
+                  <td className="table-actions-sticky" style={{ textAlign: "right", minWidth: "160px" }}>
                     <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: "0.35rem" }}>
                       {can("edit") && (
                         <>
