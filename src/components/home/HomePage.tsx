@@ -1568,7 +1568,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onEnterApp }) => {
                           id="modal-login-user"
                           type="text"
                           className="auth-input with-left-icon"
-                          placeholder="ej. paespa, admin o correo corporativo"
+                          placeholder="ej. usuario@sosenlinea.com o nombre de usuario"
                           value={username}
                           onChange={(e) => setUsername(e.target.value)}
                           autoFocus

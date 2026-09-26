@@ -343,7 +343,7 @@ export const LoginView: React.FC = () => {
                     id="login-username"
                     type="text"
                     className="form-control"
-                    placeholder="ej. paespa, admin o correo corporativo"
+                    placeholder="ej. usuario@sosenlinea.com o nombre de usuario"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                     autoComplete="username"
