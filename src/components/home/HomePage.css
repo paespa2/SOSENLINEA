@@ -513,6 +513,45 @@
   gap: 1rem;
 }
 
+/* Selector de Pestañas Hero Visual: Google Flow 3D vs Seguimiento en Vivo */
+.home-hero-tab-switch {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(12px);
+  padding: 0.35rem;
+  border-radius: 9999px;
+  border: 1px solid var(--home-border);
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
+}
+
+.home-hero-tab-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--home-muted);
+  background: transparent;
+  border: none;
+  border-radius: 9999px;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.home-hero-tab-btn:hover {
+  color: var(--home-navy);
+}
+
+.home-hero-tab-btn.active {
+  color: #ffffff;
+  background: linear-gradient(135deg, var(--home-blue) 0%, #1e40af 100%);
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
+}
+
 .home-hero-card-main {
   background: #ffffff;
   border: 1px solid var(--home-border);

@@ -40,6 +40,7 @@ import {
   Globe
 } from "lucide-react";
 import { useLanguage } from "../../context/LanguageContext";
+import { GoogleFlowHeroCanvas } from "./GoogleFlowHeroCanvas";
 import "./HomePage.css";
 
 interface HomePageProps {
@@ -64,6 +65,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onEnterApp }) => {
   const [authTab, setAuthTab] = useState<"login" | "register" | "otp-request" | "otp-verify" | "otp-reset" | "otp-success">("login");
   const [activeSection, setActiveSection] = useState<string>("hero");
   const [showScrollTop, setShowScrollTop] = useState(false);
+  const [heroVisualTab, setHeroVisualTab] = useState<"tools" | "tracking">("tools");
 
   // Escuchar scroll para Scrollspy y botón Volver Arriba
   useEffect(() => {
@@ -692,80 +694,104 @@ export const HomePage: React.FC<HomePageProps> = ({ onEnterApp }) => {
             </div>
           </div>
 
-          {/* Lado Derecho: Simulación Dinámica de Seguimiento de Solicitud */}
+          {/* Lado Derecho: Escenario Interactivo Google Flow y Simulación de Solicitud */}
           <div className="home-hero-visual">
-            <div className="home-hero-card-main">
-              <div className="home-card-header-badge">
-                <div className="home-status-tag">
-                  <span
-                    style={{
-                      width: 6,
-                      height: 6,
-                      borderRadius: "50%",
-                      background: "#16a34a",
-                    }}
-                  />
-                  Solicitud en seguimiento
-                </div>
-                <span className="home-order-number">ORD-2026-0842</span>
-              </div>
-
-              <div className="home-card-order-title">
-                Mantenimiento Hidrosanitario y Red Eléctrica
-              </div>
-              <div className="home-card-order-meta">
-                <MapPin size={14} /> Inmueble Cl. 10A #34-20, El Poblado ·
-                Inmobiliaria Rentas & Hogar
-              </div>
-
-              <div className="home-card-timeline">
-                <div className="home-timeline-step completed">
-                  <div className="home-timeline-dot">
-                    <CheckCircle2 size={12} />
-                  </div>
-                  <div className="home-timeline-title">
-                    Diagnóstico y cotización realizada
-                  </div>
-                  <div className="home-timeline-sub">
-                    Registrado en el sistema centralizado
-                  </div>
-                </div>
-
-                <div className="home-timeline-step completed">
-                  <div className="home-timeline-dot">
-                    <CheckCircle2 size={12} />
-                  </div>
-                  <div className="home-timeline-title">
-                    Aprobación de la inmobiliaria
-                  </div>
-                  <div className="home-timeline-sub">
-                    Autorizado con acta de entrega de materiales
-                  </div>
-                </div>
-
-                <div className="home-timeline-step active">
-                  <div className="home-timeline-dot">
-                    <Clock size={12} color="#ffffff" />
-                  </div>
-                  <div className="home-timeline-title">
-                    Ejecución técnica en curso
-                  </div>
-                  <div className="home-timeline-sub">
-                    Técnico en sitio cargando evidencia fotográfica
-                  </div>
-                </div>
-
-                <div className="home-timeline-step">
-                  <div className="home-timeline-dot" />
-                  <div className="home-timeline-title" style={{ color: "#94a3b8" }}>
-                    Cierre y liquidación contable
-                  </div>
-                  <div className="home-timeline-sub">
-                    Generación automática de cuenta de cobro y garantía
-                  </div>
-                </div>
-              </div>
+            {/* Selector de Experiencia Hero */}
+            <div className="home-hero-tab-switch">
+              <button
+                type="button"
+                className={`home-hero-tab-btn ${heroVisualTab === "tools" ? "active" : ""}`}
+                onClick={() => setHeroVisualTab("tools")}
+              >
+                <Sparkles size={14} />
+                <span>Herramientas 3D (Google Flow)</span>
+              </button>
+              <button
+                type="button"
+                className={`home-hero-tab-btn ${heroVisualTab === "tracking" ? "active" : ""}`}
+                onClick={() => setHeroVisualTab("tracking")}
+              >
+                <Clock size={14} />
+                <span>Seguimiento de Orden en Vivo</span>
+              </button>
             </div>
+
+            {heroVisualTab === "tools" ? (
+              <GoogleFlowHeroCanvas />
+            ) : (
+              <div className="home-hero-card-main">
+                <div className="home-card-header-badge">
+                  <div className="home-status-tag">
+                    <span
+                      style={{
+                        width: 6,
+                        height: 6,
+                        borderRadius: "50%",
+                        background: "#16a34a",
+                      }}
+                    />
+                    Solicitud en seguimiento
+                  </div>
+                  <span className="home-order-number">ORD-2026-0842</span>
+                </div>
+
+                <div className="home-card-order-title">
+                  Mantenimiento Hidrosanitario y Red Eléctrica
+                </div>
+                <div className="home-card-order-meta">
+                  <MapPin size={14} /> Inmueble Cl. 10A #34-20, El Poblado ·
+                  Inmobiliaria Rentas & Hogar
+                </div>
+
+                <div className="home-card-timeline">
+                  <div className="home-timeline-step completed">
+                    <div className="home-timeline-dot">
+                      <CheckCircle2 size={12} />
+                    </div>
+                    <div className="home-timeline-title">
+                      Diagnóstico y cotización realizada
+                    </div>
+                    <div className="home-timeline-sub">
+                      Registrado en el sistema centralizado
+                    </div>
+                  </div>
+
+                  <div className="home-timeline-step completed">
+                    <div className="home-timeline-dot">
+                      <CheckCircle2 size={12} />
+                    </div>
+                    <div className="home-timeline-title">
+                      Aprobación de la inmobiliaria
+                    </div>
+                    <div className="home-timeline-sub">
+                      Autorizado con acta de entrega de materiales
+                    </div>
+                  </div>
+
+                  <div className="home-timeline-step active">
+                    <div className="home-timeline-dot">
+                      <Clock size={12} color="#ffffff" />
+                    </div>
+                    <div className="home-timeline-title">
+                      Ejecución técnica en curso
+                    </div>
+                    <div className="home-timeline-sub">
+                      Técnico en sitio cargando evidencia fotográfica
+                    </div>
+                  </div>
+
+                  <div className="home-timeline-step">
+                    <div className="home-timeline-dot" />
+                    <div className="home-timeline-title" style={{ color: "#94a3b8" }}>
+                      Cierre y liquidación contable
+                    </div>
+                    <div className="home-timeline-sub">
+                      Generación automática de cuenta de cobro y garantía
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Tarjeta flotante con Técnico Verificado */}
             <div className="home-floating-tech-card">
