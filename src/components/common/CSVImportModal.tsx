@@ -208,9 +208,17 @@ export const CSVImportModal: React.FC<CSVImportModalProps> = ({
       if (entityType === "reportes") {
         for (const row of parsedRows) {
           try {
+            const sanitizeCsvCell = (val: string): string => {
+              const trimmed = val.trim();
+              if (/^[=+\-@\t\r]/.test(trimmed)) {
+                return trimmed.replace(/^[=+\-@\t\r]+/, "");
+              }
+              return trimmed;
+            };
+
             const getVal = (target: string) => {
               const mapping = columnMappings.find((m) => m.targetField === target);
-              return mapping ? (row[mapping.csvHeader] || "").trim() : "";
+              return mapping ? sanitizeCsvCell(row[mapping.csvHeader] || "") : "";
             };
 
             const direccion = getVal("direccion") || "Dirección no especificada";
@@ -264,9 +272,17 @@ export const CSVImportModal: React.FC<CSVImportModalProps> = ({
         // Importar Materiales
         for (const row of parsedRows) {
           try {
+            const sanitizeCsvCell = (val: string): string => {
+              const trimmed = val.trim();
+              if (/^[=+\-@\t\r]/.test(trimmed)) {
+                return trimmed.replace(/^[=+\-@\t\r]+/, "");
+              }
+              return trimmed;
+            };
+
             const getVal = (target: string) => {
               const mapping = columnMappings.find((m) => m.targetField === target);
-              return mapping ? (row[mapping.csvHeader] || "").trim() : "";
+              return mapping ? sanitizeCsvCell(row[mapping.csvHeader] || "") : "";
             };
 
             const rawPrice = getVal("precioUnitario").replace(/[^0-9.-]+/g, "");
