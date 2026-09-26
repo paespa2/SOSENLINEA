@@ -835,3 +835,44 @@ body {
     padding: 0.15rem 0.4rem !important;
   }
 }
+
+/* ── Estilos de Impresión y Descarga en PDF ── */
+@media print {
+  .no-print,
+  .sidebar,
+  .navbar-header,
+  .btn,
+  .modal-overlay:not(.print-active) {
+    display: none !important;
+  }
+
+  body,
+  .app-container,
+  .main-content,
+  .page-body {
+    background: #ffffff !important;
+    color: #000000 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    overflow: visible !important;
+    height: auto !important;
+  }
+
+  .card {
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+  }
+
+  .print-only {
+    display: block !important;
+  }
+
+  .printable-document {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 1cm !important;
+    font-size: 11pt !important;
+    color: #000000 !important;
+  }
+}
