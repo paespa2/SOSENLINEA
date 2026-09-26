@@ -1660,15 +1660,15 @@ export const ReportesView: React.FC = () => {
         <table className="data-table">
           <thead>
             <tr>
-              <th style={{ minWidth: "110px" }}>No. Orden / Radicado</th>
-              <th style={{ minWidth: "125px" }}>Fecha / Actualizado</th>
-              <th style={{ minWidth: "165px" }}>Inmueble / Rutas</th>
-              <th style={{ minWidth: "155px" }}>Participantes & Identificación</th>
-              <th style={{ minWidth: "140px" }}>Técnicos & Contratista</th>
-              <th style={{ textAlign: "right", minWidth: "115px" }}>Total Cotizado</th>
-              <th style={{ minWidth: "95px" }}>Avance</th>
-              <th style={{ minWidth: "135px" }}>Estado Actual</th>
-              <th className="table-actions-sticky" style={{ textAlign: "right", minWidth: "160px" }}>
+              <th style={{ minWidth: "105px" }}>No. Orden / Radicado</th>
+              <th style={{ minWidth: "120px" }}>Fecha / Actualizado</th>
+              <th style={{ minWidth: "160px" }}>Inmueble / Rutas</th>
+              <th style={{ minWidth: "150px" }}>Participantes & Identificación</th>
+              <th style={{ minWidth: "135px" }}>Técnicos & Contratista</th>
+              <th style={{ textAlign: "right", minWidth: "110px" }}>Total Cotizado</th>
+              <th style={{ minWidth: "90px" }}>Avance</th>
+              <th className="table-col-before-sticky" style={{ minWidth: "135px" }}>Estado Actual</th>
+              <th className="table-actions-sticky" style={{ textAlign: "right", minWidth: "155px" }}>
                 Acciones
               </th>
             </tr>
@@ -1684,7 +1684,11 @@ export const ReportesView: React.FC = () => {
               filtered.map((r) => (
                 <tr key={r.idRegistro}>
                   <td style={{ fontFamily: "var(--font-mono)" }}>
-                    <div style={{ fontWeight: 800, color: "var(--primary)", fontSize: "0.85rem" }}>
+                    <div
+                      onClick={() => handleOpenEdit(r, "proceso")}
+                      style={{ fontWeight: 800, color: "var(--primary)", fontSize: "0.85rem", cursor: "pointer", display: "inline-block" }}
+                      title="Clic para abrir seguimiento y proceso del caso"
+                    >
                       #{r.idRegistro}
                     </div>
                     {r.codigoAlfanumerico && (
@@ -1782,10 +1786,10 @@ export const ReportesView: React.FC = () => {
                       </span>
                     </div>
                   </td>
-                  <td style={{ minWidth: "135px", whiteSpace: "nowrap" }}>
+                  <td className="table-col-before-sticky" style={{ minWidth: "135px", whiteSpace: "nowrap" }}>
                     <StatusBadge status={r.estado} size="sm" />
                   </td>
-                  <td className="table-actions-sticky" style={{ textAlign: "right", minWidth: "160px" }}>
+                  <td className="table-actions-sticky" style={{ textAlign: "right", minWidth: "155px" }}>
                     <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: "0.35rem" }}>
                       {can("edit") && (
                         <>

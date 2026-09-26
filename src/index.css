@@ -269,9 +269,11 @@ body {
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
 }
 
-/* Tablas con diseño ejecutivo y responsivo */
+/* Tablas con diseño ejecutivo y responsivo Dual-Zoom (Resistente a Zoom Encoje y Expande) */
 .data-table-container,
 .table-responsive-wrapper {
+  container-type: inline-size;
+  container-name: table-wrapper;
   background: var(--bg-card);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-lg);
@@ -286,11 +288,11 @@ body {
 
 .data-table {
   width: 100%;
-  min-width: 900px;
+  min-width: 860px;
   border-collapse: separate;
   border-spacing: 0;
   text-align: left;
-  font-size: 0.875rem;
+  font-size: clamp(0.78rem, 0.84vw, 0.85rem);
 }
 
 .data-table th {
@@ -298,15 +300,15 @@ body {
   color: var(--neutral-600);
   font-weight: 700;
   text-transform: uppercase;
-  font-size: 0.72rem;
+  font-size: 0.7rem;
   letter-spacing: 0.05em;
-  padding: 0.7rem 0.85rem;
+  padding: 0.65rem 0.75rem;
   border-bottom: 1px solid var(--border-color);
   white-space: nowrap;
 }
 
 .data-table td {
-  padding: 0.7rem 0.85rem;
+  padding: 0.65rem 0.75rem;
   border-bottom: 1px solid var(--border-color);
   color: var(--text-main);
   vertical-align: middle;
@@ -325,11 +327,15 @@ body {
   border-bottom: none;
 }
 
-/* Columna de Acciones - Flujo continuo sin solapamientos ni ocultamiento de datos */
+/* ── 1. ESTADO BASE / ZOOM ENCOGIDO (70% - 100% o pantallas amplias >= 1080px) ── */
+/* Flujo natural sin solapamiento: NINGUNA columna flota sobre otra ni oculta texto */
 .table-actions-sticky {
+  position: static;
+  background-color: var(--bg-card);
   white-space: nowrap;
   vertical-align: middle;
-  background-color: var(--bg-card);
+  border-left: none;
+  box-shadow: none;
 }
 
 thead th.table-actions-sticky {
@@ -338,6 +344,59 @@ thead th.table-actions-sticky {
 
 tbody tr:hover td.table-actions-sticky {
   background-color: var(--neutral-50);
+}
+
+/* ── 2. ESTADO CUANDO EL ZOOM SE EXPANDE (110% - 175% o pantallas reducidas <= 1180px) ── */
+/* Los botones de acción se anclan a la derecha para no perderse, con divisor y colchón de aire */
+@container table-wrapper (max-width: 1100px) {
+  .table-actions-sticky {
+    position: sticky !important;
+    right: 0 !important;
+    z-index: 10 !important;
+    background-color: var(--bg-card) !important;
+    border-left: 2px solid var(--border-color) !important;
+    box-shadow: -4px 0 10px -2px rgba(0, 0, 0, 0.07) !important;
+  }
+
+  thead th.table-actions-sticky {
+    background-color: var(--neutral-50) !important;
+    z-index: 11 !important;
+  }
+
+  tbody tr:hover td.table-actions-sticky {
+    background-color: var(--neutral-50) !important;
+  }
+
+  /* Colchón de protección para la columna previa (Estado Actual) */
+  .table-col-before-sticky {
+    min-width: 145px !important;
+    padding-right: 1.5rem !important;
+  }
+}
+
+@media (max-width: 1180px) {
+  .table-actions-sticky {
+    position: sticky !important;
+    right: 0 !important;
+    z-index: 10 !important;
+    background-color: var(--bg-card) !important;
+    border-left: 2px solid var(--border-color) !important;
+    box-shadow: -4px 0 10px -2px rgba(0, 0, 0, 0.07) !important;
+  }
+
+  thead th.table-actions-sticky {
+    background-color: var(--neutral-50) !important;
+    z-index: 11 !important;
+  }
+
+  tbody tr:hover td.table-actions-sticky {
+    background-color: var(--neutral-50) !important;
+  }
+
+  .table-col-before-sticky {
+    min-width: 145px !important;
+    padding-right: 1.5rem !important;
+  }
 }
 
 /* Moneda y cifras numéricas */
