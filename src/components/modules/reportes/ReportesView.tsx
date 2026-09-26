@@ -16,11 +16,13 @@ import { formatCOP, formatDateCO, formatDateTimeCO } from "../../../utils/format
 import { exportToCSV, triggerPrint } from "../../../utils/exportUtils";
 import { Modal } from "../../common/Modal";
 import { StatusBadge } from "../../common/Badge";
+import { CSVImportModal } from "../../common/CSVImportModal";
 import {
   FileSpreadsheet,
   Plus,
   Search,
   Download,
+  Upload,
   Edit2,
   Trash2,
   Building,
@@ -206,6 +208,7 @@ export const ReportesView: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedEstado, setSelectedEstado] = useState<string>("todos");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isCSVModalOpen, setIsCSVModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<ReporteOrden | null>(null);
   const [formError, setFormError] = useState<string | null>(null);
   const [feedbackSuccess, setFeedbackSuccess] = useState<string | null>(null);
@@ -1568,6 +1571,17 @@ export const ReportesView: React.FC = () => {
         </div>
 
         <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+          <button
+            type="button"
+            onClick={() => setIsCSVModalOpen(true)}
+            className="btn btn-secondary btn-sm"
+            style={{ display: "flex", alignItems: "center", gap: "0.4rem", background: "rgba(37, 99, 235, 0.08)", color: "var(--primary)", borderColor: "rgba(37, 99, 235, 0.3)" }}
+            title="Importar tablas y registros masivos desde archivos CSV o Excel"
+          >
+            <Upload size={15} />
+            Importar CSV
+          </button>
+
           {can("export") && (
             <button onClick={handleExport} className="btn btn-secondary btn-sm">
               <Download size={15} />
@@ -5163,6 +5177,13 @@ export const ReportesView: React.FC = () => {
           </div>
         </Modal>
       )}
+
+      {/* Modal Inteligente de Importación de Tablas CSV */}
+      <CSVImportModal
+        isOpen={isCSVModalOpen}
+        onClose={() => setIsCSVModalOpen(false)}
+        defaultEntity="reportes"
+      />
     </div>
   );
 };

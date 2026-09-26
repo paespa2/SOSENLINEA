@@ -7,6 +7,8 @@ export interface User {
   role: Role;
   avatar?: string;
   cargo?: string;
+  telefono?: string;
+  selloDigital?: string;
 }
 
 export type ModuleCategory = "principal" | "contable" | "maestros" | "informes" | "operaciones" | "auditoria";

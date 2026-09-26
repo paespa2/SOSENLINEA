@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
+import { UserProfileModal } from "../common/UserProfileModal";
 import {
   Database,
   Search,
@@ -31,15 +32,8 @@ export const Navbar: React.FC<NavbarProps> = ({
   onToggleCollapseSidebar,
   onToggleMobileMenu,
 }) => {
-  const { currentUser, currentRole, permissions, changePassword } = useAuth();
+  const { currentUser, currentRole, permissions } = useAuth();
   const [showModal, setShowModal] = useState(false);
-  const [currPassword, setCurrPassword] = useState("");
-  const [nextPassword, setNextPassword] = useState("");
-  const [confirmNextPassword, setConfirmNextPassword] = useState("");
-  const [showPass, setShowPass] = useState(false);
-  const [modalLoading, setModalLoading] = useState(false);
-  const [modalError, setModalError] = useState("");
-  const [modalSuccess, setModalSuccess] = useState(false);
 
   // Iniciales del nombre
   const initials = currentUser?.name
@@ -219,22 +213,15 @@ export const Navbar: React.FC<NavbarProps> = ({
           </div>
         </div>
 
-        {/* Botón Cambiar Contraseña */}
+        {/* Botón Mi Perfil & Seguridad */}
         <button
-          onClick={() => {
-            setShowModal(true);
-            setModalError("");
-            setModalSuccess(false);
-            setCurrPassword("");
-            setNextPassword("");
-            setConfirmNextPassword("");
-          }}
+          onClick={() => setShowModal(true)}
           className="btn btn-secondary btn-sm"
-          title="Cambiar mi contraseña"
+          title="Ver y editar mi perfil, cargo o contraseña"
           style={{ display: "flex", alignItems: "center", gap: "0.35rem", fontSize: "0.75rem", padding: "0.35rem 0.65rem" }}
         >
-          <KeyRound size={13} />
-          <span>Clave</span>
+          <KeyRound size={13} color="#0891b2" />
+          <span>Mi Perfil</span>
         </button>
 
         {/* Logout */}
@@ -256,175 +243,8 @@ export const Navbar: React.FC<NavbarProps> = ({
         )}
       </div>
 
-      {/* ── Modal de Cambio de Contraseña ── */}
-      {showModal && (
-        <div
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            width: "100vw",
-            height: "100vh",
-            background: "rgba(15, 23, 42, 0.6)",
-            backdropFilter: "blur(4px)",
-            zIndex: 9999,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            padding: "1rem",
-          }}
-          onClick={() => !modalLoading && setShowModal(false)}
-        >
-          <div
-            className="card"
-            style={{
-              maxWidth: "420px",
-              width: "100%",
-              padding: "1.5rem",
-              position: "relative",
-              boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.2)",
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                <div style={{ width: "32px", height: "32px", borderRadius: "8px", background: "rgba(37, 99, 235, 0.1)", color: "var(--primary)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                  <KeyRound size={18} />
-                </div>
-                <h3 style={{ fontSize: "1.1rem", fontWeight: 800, margin: 0 }}>
-                  Cambiar Contraseña
-                </h3>
-              </div>
-              <button
-                onClick={() => setShowModal(false)}
-                style={{ background: "none", border: "none", cursor: "pointer", color: "var(--text-muted)", padding: "0.2rem" }}
-              >
-                <X size={18} />
-              </button>
-            </div>
-
-            <p style={{ fontSize: "0.8rem", color: "var(--text-muted)", marginBottom: "1.25rem" }}>
-              Actualiza la clave de acceso para tu cuenta actual (<strong>{currentUser?.name}</strong>).
-            </p>
-
-            {modalError && (
-              <div className="alert alert-danger" style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "1rem" }}>
-                <AlertCircle size={15} />
-                <span style={{ fontSize: "0.8rem" }}>{modalError}</span>
-              </div>
-            )}
-
-            {modalSuccess ? (
-              <div style={{ textAlign: "center", padding: "1rem 0" }}>
-                <CheckCircle2 size={40} color="#10b981" style={{ margin: "0 auto 0.5rem auto" }} />
-                <h4 style={{ fontWeight: 800, marginBottom: "0.25rem" }}>¡Contraseña Actualizada!</h4>
-                <p style={{ fontSize: "0.8rem", color: "var(--text-muted)", marginBottom: "1rem" }}>
-                  Tu contraseña ha sido cambiada correctamente en el sistema.
-                </p>
-                <button
-                  type="button"
-                  onClick={() => setShowModal(false)}
-                  className="btn btn-primary btn-sm"
-                  style={{ width: "100%" }}
-                >
-                  Cerrar
-                </button>
-              </div>
-            ) : (
-              <form
-                onSubmit={async (e) => {
-                  e.preventDefault();
-                  setModalError("");
-                  if (nextPassword.length < 6) {
-                    setModalError("La nueva contraseña debe tener mínimo 6 caracteres.");
-                    return;
-                  }
-                  if (nextPassword !== confirmNextPassword) {
-                    setModalError("Las nuevas contraseñas no coinciden.");
-                    return;
-                  }
-                  setModalLoading(true);
-                  try {
-                    await changePassword(currPassword, nextPassword);
-                    setModalSuccess(true);
-                  } catch (err) {
-                    setModalError(err instanceof Error ? err.message : "Error al cambiar contraseña.");
-                  } finally {
-                    setModalLoading(false);
-                  }
-                }}
-                style={{ display: "flex", flexDirection: "column", gap: "0.85rem" }}
-              >
-                <div>
-                  <label style={{ fontSize: "0.75rem", fontWeight: 700, color: "var(--text-muted)" }}>Contraseña Actual</label>
-                  <input
-                    type={showPass ? "text" : "password"}
-                    className="input-field"
-                    style={{ width: "100%", marginTop: "0.25rem", padding: "0.45rem 0.65rem" }}
-                    placeholder="Ingresa tu contraseña actual"
-                    value={currPassword}
-                    onChange={(e) => setCurrPassword(e.target.value)}
-                    required
-                  />
-                </div>
-
-                <div>
-                  <div style={{ display: "flex", justifyContent: "space-between" }}>
-                    <label style={{ fontSize: "0.75rem", fontWeight: 700, color: "var(--text-muted)" }}>Nueva Contraseña</label>
-                    <button
-                      type="button"
-                      onClick={() => setShowPass(!showPass)}
-                      style={{ background: "none", border: "none", color: "var(--primary)", fontSize: "0.7rem", cursor: "pointer" }}
-                    >
-                      {showPass ? "Ocultar" : "Mostrar"}
-                    </button>
-                  </div>
-                  <input
-                    type={showPass ? "text" : "password"}
-                    className="input-field"
-                    style={{ width: "100%", marginTop: "0.25rem", padding: "0.45rem 0.65rem" }}
-                    placeholder="Mínimo 6 caracteres"
-                    value={nextPassword}
-                    onChange={(e) => setNextPassword(e.target.value)}
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label style={{ fontSize: "0.75rem", fontWeight: 700, color: "var(--text-muted)" }}>Confirmar Nueva Contraseña</label>
-                  <input
-                    type={showPass ? "text" : "password"}
-                    className="input-field"
-                    style={{ width: "100%", marginTop: "0.25rem", padding: "0.45rem 0.65rem" }}
-                    placeholder="Repite la nueva contraseña"
-                    value={confirmNextPassword}
-                    onChange={(e) => setConfirmNextPassword(e.target.value)}
-                    required
-                  />
-                </div>
-
-                <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.5rem", marginTop: "0.5rem" }}>
-                  <button
-                    type="button"
-                    onClick={() => setShowModal(false)}
-                    className="btn btn-secondary btn-sm"
-                    disabled={modalLoading}
-                  >
-                    Cancelar
-                  </button>
-                  <button
-                    type="submit"
-                    className="btn btn-primary btn-sm"
-                    disabled={modalLoading || !currPassword || !nextPassword || !confirmNextPassword}
-                  >
-                    {modalLoading ? "Guardando…" : "Actualizar Contraseña"}
-                  </button>
-                </div>
-              </form>
-            )}
-          </div>
-        </div>
-      )}
+      {/* ── Modal Completo de Gestión de Perfil de Usuario ── */}
+      <UserProfileModal isOpen={showModal} onClose={() => setShowModal(false)} />
     </header>
   );
 };

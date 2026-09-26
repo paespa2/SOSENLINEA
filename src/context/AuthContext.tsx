@@ -33,6 +33,7 @@ interface AuthContextType {
   verifyOtp: (emailOrUsername: string, otp: string) => Promise<{ valid: boolean; message: string }>;
   resetPassword: (emailOrUsername: string, otp: string, newPassword: string) => Promise<{ success: boolean; message: string }>;
   changePassword: (currentPassword: string, newPassword: string) => Promise<{ success: boolean; message: string }>;
+  updateProfile: (data: { name: string; email?: string; cargo?: string; telefono?: string }) => Promise<{ success: boolean; message: string }>;
   canAccessModule: (moduleId: ModuleId) => boolean;
   can: (action: "create" | "edit" | "delete" | "export" | "audit" | "reconcile") => boolean;
 }
@@ -111,12 +112,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const userEmail =
       Object.values(AUTHORIZED_USERS).find((u) => u.name === apiUser.name || u.role === role)?.email ||
       `${apiUser.username}@sosenlinea.com`;
+
+    let savedProfile: { name?: string; cargo?: string; email?: string; telefono?: string } = {};
+    try {
+      const str = localStorage.getItem(`sos_profile_${apiUser.id}`);
+      if (str) savedProfile = JSON.parse(str);
+    } catch {}
+
     const user: User = {
       id: String(apiUser.id),
-      name: apiUser.name,
+      name: savedProfile.name || apiUser.name,
       role,
-      cargo: INITIAL_ROLES_PERMISSIONS[role]?.label || (role === "admin" ? "Administrador" : role === "desarrollador" ? "Desarrollador" : role === "auxiliar" ? "Auxiliar Administrativo" : apiUser.role),
-      email: userEmail,
+      cargo: savedProfile.cargo || INITIAL_ROLES_PERMISSIONS[role]?.label || (role === "admin" ? "Administrador" : role === "desarrollador" ? "Desarrollador" : role === "auxiliar" ? "Auxiliar Administrativo" : apiUser.role),
+      email: savedProfile.email || userEmail,
+      telefono: savedProfile.telefono || "300 456 7890",
+      selloDigital: `SOS-SIG-${String(apiUser.id).padStart(4, "0")}-${role.toUpperCase()}`,
     };
     setCurrentUser(user);
     setCurrentRole(role);
@@ -274,6 +284,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, []);
 
+  // ── Actualizar Perfil de Usuario ────────────────────────────────────────────
+  const updateProfile = useCallback(async (data: { name: string; email?: string; cargo?: string; telefono?: string }) => {
+    if (!currentUser) return { success: false, message: "No hay sesión activa." };
+    const updatedUser: User = {
+      ...currentUser,
+      name: data.name.trim() || currentUser.name,
+      email: data.email?.trim() || currentUser.email,
+      cargo: data.cargo?.trim() || currentUser.cargo,
+      telefono: data.telefono?.trim() || currentUser.telefono,
+    };
+    setCurrentUser(updatedUser);
+    try {
+      localStorage.setItem(`sos_profile_${currentUser.id}`, JSON.stringify(updatedUser));
+    } catch {}
+    return { success: true, message: "Perfil de usuario actualizado exitosamente." };
+  }, [currentUser]);
+
   // ── Permisos ────────────────────────────────────────────────────────────────
   const permissions: RolePermissions =
     INITIAL_ROLES_PERMISSIONS[currentRole] || INITIAL_ROLES_PERMISSIONS.usuario;
@@ -313,6 +340,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         verifyOtp,
         resetPassword,
         changePassword,
+        updateProfile,
         canAccessModule,
         can,
       }}
