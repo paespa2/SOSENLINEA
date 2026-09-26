@@ -1656,19 +1656,21 @@ export const ReportesView: React.FC = () => {
       </div>
 
       {/* Tabla de Reportes con Seguimiento de Momento a Momento */}
-      <div className="card no-print" style={{ padding: 0, overflow: "hidden" }}>
+      <div className="card no-print table-responsive-wrapper" style={{ padding: 0 }}>
         <table className="data-table">
           <thead>
             <tr>
-              <th style={{ width: "120px" }}>No. Orden / Radicado</th>
-              <th>Fecha / Último Actualizado</th>
-              <th>Inmueble / Rutas</th>
-              <th>Participantes & Identificación</th>
-              <th>Técnicos & Contratista</th>
-              <th style={{ textAlign: "right" }}>Total Cotizado</th>
-              <th>Avance</th>
-              <th>Estado Actual</th>
-              <th style={{ textAlign: "right", width: "160px" }}>Acciones</th>
+              <th style={{ minWidth: "120px" }}>No. Orden / Radicado</th>
+              <th style={{ minWidth: "135px" }}>Fecha / Último Actualizado</th>
+              <th style={{ minWidth: "180px" }}>Inmueble / Rutas</th>
+              <th style={{ minWidth: "160px" }}>Participantes & Identificación</th>
+              <th style={{ minWidth: "150px" }}>Técnicos & Contratista</th>
+              <th style={{ textAlign: "right", minWidth: "120px" }}>Total Cotizado</th>
+              <th style={{ minWidth: "105px" }}>Avance</th>
+              <th style={{ minWidth: "130px" }}>Estado Actual</th>
+              <th className="table-actions-sticky" style={{ textAlign: "right", width: "175px", minWidth: "175px" }}>
+                Acciones
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -1783,7 +1785,7 @@ export const ReportesView: React.FC = () => {
                   <td>
                     <StatusBadge status={r.estado} size="sm" />
                   </td>
-                  <td style={{ textAlign: "right" }}>
+                  <td className="table-actions-sticky" style={{ textAlign: "right", width: "175px", minWidth: "175px" }}>
                     <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: "0.35rem" }}>
                       {can("edit") && (
                         <>

@@ -269,18 +269,26 @@ body {
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
 }
 
-/* Tablas con diseño ejecutivo */
-.data-table-container {
+/* Tablas con diseño ejecutivo y responsivo */
+.data-table-container,
+.table-responsive-wrapper {
   background: var(--bg-card);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-lg);
-  overflow: hidden;
+  overflow-x: auto;
+  overflow-y: visible;
+  max-width: 100%;
+  width: 100%;
+  position: relative;
   box-shadow: var(--shadow-card);
+  -webkit-overflow-scrolling: touch;
 }
 
 .data-table {
   width: 100%;
-  border-collapse: collapse;
+  min-width: 900px;
+  border-collapse: separate;
+  border-spacing: 0;
   text-align: left;
   font-size: 0.875rem;
 }
@@ -292,27 +300,47 @@ body {
   text-transform: uppercase;
   font-size: 0.72rem;
   letter-spacing: 0.05em;
-  padding: 0.85rem 1.25rem;
+  padding: 0.85rem 1.1rem;
   border-bottom: 1px solid var(--border-color);
+  white-space: nowrap;
 }
 
 .data-table td {
-  padding: 0.95rem 1.25rem;
+  padding: 0.85rem 1.1rem;
   border-bottom: 1px solid var(--border-color);
   color: var(--text-main);
   vertical-align: middle;
+  background-color: var(--bg-card);
 }
 
 .data-table tbody tr {
   transition: background-color 0.15s ease;
 }
 
-.data-table tbody tr:hover {
+.data-table tbody tr:hover td {
   background-color: var(--neutral-50);
 }
 
 .data-table tbody tr:last-child td {
   border-bottom: none;
+}
+
+/* Columna de Acciones Flotante Fija (Sticky) a la Derecha */
+.table-actions-sticky {
+  position: sticky !important;
+  right: 0 !important;
+  z-index: 10 !important;
+  box-shadow: -8px 0 14px -4px rgba(0, 0, 0, 0.12) !important;
+  background-color: var(--bg-card) !important;
+}
+
+thead th.table-actions-sticky {
+  background-color: var(--neutral-50) !important;
+  z-index: 11 !important;
+}
+
+tbody tr:hover td.table-actions-sticky {
+  background-color: var(--neutral-50) !important;
 }
 
 /* Moneda y cifras numéricas */

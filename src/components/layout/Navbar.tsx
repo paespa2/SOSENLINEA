@@ -130,7 +130,7 @@ export const Navbar: React.FC<NavbarProps> = ({
       </div>
 
       {/* Global Search Bar */}
-      <div style={{ flex: 1, maxWidth: "420px", margin: "0 2rem" }}>
+      <div style={{ flex: 1, minWidth: "150px", maxWidth: "380px", margin: "0 0.85rem" }}>
         <div
           style={{
             position: "relative",
@@ -148,12 +148,12 @@ export const Navbar: React.FC<NavbarProps> = ({
           />
           <input
             type="text"
-            placeholder="Buscar por NIT, Orden, Inmueble, Contratista o Comprobante..."
+            placeholder="Buscar por NIT, Orden, Inmueble, Contratista..."
             onChange={(e) => onSearchChange && onSearchChange(e.target.value)}
             style={{
               width: "100%",
-              padding: "0.5rem 0.85rem 0.5rem 2.25rem",
-              fontSize: "0.825rem",
+              padding: "0.45rem 0.75rem 0.45rem 2.2rem",
+              fontSize: "0.8rem",
               borderRadius: "var(--radius-md)",
               border: "1px solid var(--border-color)",
               background: "var(--neutral-50)",
@@ -165,7 +165,7 @@ export const Navbar: React.FC<NavbarProps> = ({
       </div>
 
       {/* Right Controls: Rol + User + Logout */}
-      <div style={{ display: "flex", alignItems: "center", gap: "1.25rem" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: "0.85rem", flexShrink: 0 }}>
 
         {/* Role Badge (read-only, viene del JWT) */}
         <div

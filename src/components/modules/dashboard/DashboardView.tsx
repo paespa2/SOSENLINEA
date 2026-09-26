@@ -755,17 +755,17 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onNavigate }) => {
           </div>
 
           {/* Tabla de Registros */}
-          <div className="data-table-container" style={{ border: "1px solid var(--border-color)", borderRadius: "8px" }}>
+          <div className="table-responsive-wrapper" style={{ border: "1px solid var(--border-color)", borderRadius: "8px" }}>
             <table className="data-table">
               <thead>
                 <tr>
-                  <th>Radicado</th>
-                  <th>Inmueble & Solicitante</th>
-                  <th>Especialidad</th>
-                  <th>Cuadrilla</th>
-                  <th>Avance</th>
-                  <th>Estado</th>
-                  <th style={{ textAlign: "right" }}>Acción</th>
+                  <th style={{ minWidth: "110px" }}>Radicado</th>
+                  <th style={{ minWidth: "160px" }}>Inmueble & Solicitante</th>
+                  <th style={{ minWidth: "130px" }}>Especialidad</th>
+                  <th style={{ minWidth: "130px" }}>Cuadrilla</th>
+                  <th style={{ minWidth: "90px" }}>Avance</th>
+                  <th style={{ minWidth: "110px" }}>Estado</th>
+                  <th className="table-actions-sticky" style={{ textAlign: "right", minWidth: "85px" }}>Acción</th>
                 </tr>
               </thead>
               <tbody>
@@ -844,7 +844,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onNavigate }) => {
                           <StatusBadge status={r.estado} size="sm" />
                         </td>
 
-                        <td style={{ textAlign: "right" }}>
+                        <td className="table-actions-sticky" style={{ textAlign: "right" }}>
                           <button
                             type="button"
                             onClick={() => onNavigate("reportes-ordenes")}
