@@ -187,7 +187,7 @@ export const CSVImportModal: React.FC<CSVImportModalProps> = ({
       sampleRow = "MAT-010;Cable THHN #12 Blanco;Metro;3200;150";
     }
 
-    const blob = new Blob([`${csvHeader}\n${sampleRow}\n`], { type: "text/csv;charset=utf-8;" });
+    const blob = new Blob(["\uFEFF" + `${csvHeader}\r\n${sampleRow}\r\n`], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;

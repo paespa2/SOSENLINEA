@@ -33,6 +33,12 @@ export function exportToCSV<T extends Record<string, any>>(
         } else {
           strVal = String(val);
         }
+
+        // Sanitizar contra inyección de fórmulas de hoja de cálculo (CWE-1236)
+        if (/^[=+\-@\t\r]/.test(strVal)) {
+          strVal = "'" + strVal;
+        }
+
         return `"${strVal.replace(/"/g, '""')}"`;
       })
       .join(";");

@@ -920,13 +920,23 @@ tbody tr:hover td.table-actions-sticky {
   }
 }
 
-/* ── Estilos de Impresión y Descarga en PDF ── */
+/* ── Estilos de Impresión y Descarga en PDF (Habilitado para Modales y Vistas) ── */
 @media print {
+  @page {
+    size: letter portrait;
+    margin: 1.2cm;
+  }
+
   .no-print,
   .sidebar,
+  .navbar,
   .navbar-header,
+  .breadcrumb-nav,
   .btn,
-  .modal-overlay:not(.print-active) {
+  button,
+  .modal-header,
+  .modal-footer,
+  .modal-close-btn {
     display: none !important;
   }
 
@@ -935,11 +945,35 @@ tbody tr:hover td.table-actions-sticky {
   .main-content,
   .page-body {
     background: #ffffff !important;
-    color: #000000 !important;
+    color: #111827 !important;
     padding: 0 !important;
     margin: 0 !important;
     overflow: visible !important;
     height: auto !important;
+  }
+
+  /* Si hay un modal abierto, permitir que se expanda como documento limpio */
+  .modal-overlay {
+    position: static !important;
+    background: transparent !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    display: block !important;
+    overflow: visible !important;
+  }
+
+  .modal-content {
+    box-shadow: none !important;
+    border: none !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    background: #ffffff !important;
+  }
+
+  .modal-body {
+    padding: 0 !important;
   }
 
   .card {
@@ -955,8 +989,15 @@ tbody tr:hover td.table-actions-sticky {
   .printable-document {
     width: 100% !important;
     max-width: 100% !important;
-    padding: 1cm !important;
-    font-size: 11pt !important;
-    color: #000000 !important;
+    padding: 0 !important;
+    font-size: 10.5pt !important;
+    color: #0f172a !important;
+    line-height: 1.4 !important;
+  }
+
+  .printable-document * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
 }
+
