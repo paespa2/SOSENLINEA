@@ -755,11 +755,11 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onNavigate }) => {
           </div>
 
           {/* Tabla de Registros */}
-          <div className="table-responsive-wrapper" style={{ border: "1px solid var(--border-color)", borderRadius: "8px" }}>
+          <div className="table-responsive-wrapper">
             <table className="data-table">
               <thead>
                 <tr>
-                  <th style={{ minWidth: "110px" }}>Radicado</th>
+                  <th style={{ minWidth: "75px", width: "80px", textAlign: "center" }}>#</th>
                   <th style={{ minWidth: "160px" }}>Inmueble & Solicitante</th>
                   <th style={{ minWidth: "130px" }}>Especialidad</th>
                   <th style={{ minWidth: "130px" }}>Cuadrilla</th>
@@ -781,22 +781,26 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onNavigate }) => {
                     const percent = Math.round((r.tasaAvance || 0) * 100);
                     return (
                       <tr key={r.idRegistro}>
-                        <td>
-                          <div style={{ fontWeight: 800, color: "var(--primary)", fontFamily: "monospace", fontSize: "0.85rem" }}>
-                            {r.codigoAlfanumerico || `#${r.idRegistro}`}
-                          </div>
-                          <div style={{ fontSize: "0.68rem", color: "var(--text-muted)" }}>
-                            {r.fecha}
-                          </div>
+                        <td style={{ textAlign: "center", width: "80px" }}>
+                          <button
+                            type="button"
+                            onClick={() => onNavigate("reportes-ordenes")}
+                            className="badge-order-id"
+                            title={`Radicado: ${r.codigoAlfanumerico || '#' + r.idRegistro} • Clic para ver`}
+                          >
+                            #{r.idRegistro}
+                          </button>
                         </td>
 
                         <td>
                           <div style={{ fontWeight: 600, fontSize: "0.825rem", color: "var(--text-main)" }}>
                             {r.direccion}
                           </div>
-                          <div style={{ fontSize: "0.72rem", color: "var(--text-muted)", display: "flex", alignItems: "center", gap: "0.3rem" }}>
+                          <div style={{ fontSize: "0.72rem", color: "var(--text-muted)", display: "flex", alignItems: "center", gap: "0.3rem", marginTop: "0.15rem" }}>
                             <User size={11} />
-                            {r.clienteNombre}
+                            <span>{r.clienteNombre}</span>
+                            <span>•</span>
+                            <span>{r.fecha}</span>
                           </div>
                         </td>
 
@@ -861,24 +865,25 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onNavigate }) => {
                 )}
               </tbody>
             </table>
-          </div>
 
-          {/* Footer de la Tabla */}
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "1rem", fontSize: "0.78rem" }}>
-            <span style={{ color: "var(--text-muted)" }}>
-              Mostrando {Math.min(10, ordenesFiltradas.length)} de {ordenesFiltradas.length} órdenes filtradas
-            </span>
-            <button
-              type="button"
-              onClick={() => onNavigate("reportes-ordenes")}
-              className="btn btn-secondary btn-sm"
-              style={{ display: "flex", alignItems: "center", gap: "0.35rem", fontSize: "0.75rem" }}
-            >
-              Ver Todas las Órdenes
-              <ChevronRight size={14} />
-            </button>
+            {/* Footer con contorno y paginación dentro de la tarjeta */}
+            <div className="table-footer-bar">
+              <span>
+                Mostrando {Math.min(10, ordenesFiltradas.length)} de {ordenesFiltradas.length} órdenes filtradas
+              </span>
+              <button
+                type="button"
+                onClick={() => onNavigate("reportes-ordenes")}
+                className="btn btn-secondary btn-sm"
+                style={{ display: "flex", alignItems: "center", gap: "0.35rem", fontSize: "0.75rem", padding: "0.3rem 0.6rem" }}
+              >
+                Ver Todas las Órdenes
+                <ChevronRight size={14} />
+              </button>
+            </div>
           </div>
         </div>
+
 
         {/* COLUMNA DERECHA: SALUD OPERATIVA & NOVEDADES */}
         <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>

@@ -1660,7 +1660,7 @@ export const ReportesView: React.FC = () => {
         <table className="data-table">
           <thead>
             <tr>
-              <th style={{ minWidth: "105px" }}>No. Orden / Radicado</th>
+              <th style={{ minWidth: "75px", width: "80px", textAlign: "center" }}># Orden</th>
               <th style={{ minWidth: "120px" }}>Fecha / Actualizado</th>
               <th style={{ minWidth: "160px" }}>Inmueble / Rutas</th>
               <th style={{ minWidth: "150px" }}>Participantes & Identificación</th>
@@ -1683,35 +1683,15 @@ export const ReportesView: React.FC = () => {
             ) : (
               filtered.map((r) => (
                 <tr key={r.idRegistro}>
-                  <td style={{ fontFamily: "var(--font-mono)" }}>
-                    <div
+                  <td style={{ fontFamily: "var(--font-mono)", textAlign: "center", width: "80px" }}>
+                    <button
+                      type="button"
                       onClick={() => handleOpenEdit(r, "proceso")}
-                      style={{ fontWeight: 800, color: "var(--primary)", fontSize: "0.85rem", cursor: "pointer", display: "inline-block" }}
-                      title="Clic para abrir seguimiento y proceso del caso"
+                      className="badge-order-id"
+                      title={`Radicado: ${r.codigoAlfanumerico || '#' + r.idRegistro} • Clic para ver proceso y seguimiento`}
                     >
                       #{r.idRegistro}
-                    </div>
-                    {r.codigoAlfanumerico && (
-                      <div style={{ fontSize: "0.68rem", color: "var(--text-muted)", fontWeight: 600 }}>
-                        {r.codigoAlfanumerico}
-                      </div>
-                    )}
-                    {r.tipoTrabajo && (
-                      <span
-                        style={{
-                          fontSize: "0.62rem",
-                          background: "rgba(8,145,178,0.1)",
-                          color: "#0891b2",
-                          padding: "0.1rem 0.35rem",
-                          borderRadius: "3px",
-                          fontWeight: 700,
-                          display: "inline-block",
-                          marginTop: "0.2rem",
-                        }}
-                      >
-                        {r.tipoTrabajo}
-                      </span>
-                    )}
+                    </button>
                   </td>
                   <td>
                     <div style={{ fontSize: "0.8rem", color: "var(--text-main)", fontWeight: 600 }}>
@@ -1732,8 +1712,24 @@ export const ReportesView: React.FC = () => {
                   </td>
                   <td>
                     <div style={{ fontWeight: 600, color: "var(--text-main)" }}>{r.direccion}</div>
-                    <div style={{ fontSize: "0.725rem", color: "var(--text-muted)" }}>
-                      {r.sector} • <span style={{ color: "var(--primary)", fontWeight: 600 }}>{r.clienteNombre}</span>
+                    <div style={{ fontSize: "0.725rem", color: "var(--text-muted)", display: "flex", alignItems: "center", gap: "0.35rem", flexWrap: "wrap", marginTop: "0.2rem" }}>
+                      <span>{r.sector}</span>
+                      <span>•</span>
+                      <span style={{ color: "var(--primary)", fontWeight: 600 }}>{r.clienteNombre}</span>
+                      {r.tipoTrabajo && (
+                        <span
+                          style={{
+                            fontSize: "0.62rem",
+                            background: "rgba(8,145,178,0.1)",
+                            color: "#0891b2",
+                            padding: "0.1rem 0.35rem",
+                            borderRadius: "3px",
+                            fontWeight: 700,
+                          }}
+                        >
+                          {r.tipoTrabajo}
+                        </span>
+                      )}
                     </div>
                   </td>
                   <td style={{ fontSize: "0.8rem" }}>
@@ -1844,6 +1840,17 @@ export const ReportesView: React.FC = () => {
             )}
           </tbody>
         </table>
+
+        {/* Footer elegante para rematar la tarjeta sin cortes abruptos */}
+        <div className="table-footer-bar">
+          <span>
+            Mostrando <strong>{filtered.length}</strong> de <strong>{reportes.length}</strong> órdenes registradas
+          </span>
+          <span style={{ display: "flex", alignItems: "center", gap: "0.45rem" }}>
+            <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#10b981", display: "inline-block" }} />
+            Sistema Sincronizado y Operativo
+          </span>
+        </div>
       </div>
 
       {/* =========================================================================
@@ -1856,17 +1863,17 @@ export const ReportesView: React.FC = () => {
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
+        badge={`#${currentOrderId}`}
         title={
           formStep === "reporte"
-            ? editingItem
-              ? `Editar Reporte - Caso #${editingItem.idRegistro}`
-              : `Registrar Nuevo Reporte #${nextOrderId}`
+            ? (editingItem ? "Editar Reporte" : "Nuevo Reporte")
             : formStep === "cotizacion"
-            ? `Cotizaciones del Caso #${currentOrderId}`
+            ? "Cotizaciones del Caso"
             : formStep === "firma"
-            ? `Documento Oficial & Firma Electrónica - Caso #${currentOrderId}`
-            : `Registro del Proceso & Seguimiento en Vivo - Caso #${currentOrderId}`
+            ? "Documento & Firma Electrónica"
+            : "Seguimiento y Proceso en Vivo"
         }
+        subtitle={editingItem ? `${editingItem.direccion} • ${editingItem.clienteNombre}` : "Formulario Oficial de Mantenimiento y Operaciones"}
         maxWidth="1020px"
       >
         <div style={{ display: "flex", flexDirection: "column", gap: "1.1rem" }}>
@@ -1874,36 +1881,42 @@ export const ReportesView: React.FC = () => {
           <div
             className="step-tabs-header no-print"
             style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
+              display: "flex",
+              alignItems: "center",
               gap: "0.5rem",
               background: "var(--neutral-100, #f1f5f9)",
-              padding: "0.4rem",
+              padding: "0.35rem",
               borderRadius: "var(--radius-md)",
+              overflowX: "auto",
+              WebkitOverflowScrolling: "touch",
+              scrollbarWidth: "none",
             }}
           >
             <button
               type="button"
               onClick={() => setFormStep("reporte")}
               style={{
+                flex: "1 1 auto",
+                minWidth: "120px",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
                 gap: "0.4rem",
-                padding: "0.6rem 0.5rem",
+                padding: "0.55rem 0.65rem",
                 borderRadius: "var(--radius-sm)",
                 border: "none",
-                background: formStep === "reporte" ? "var(--surface)" : "transparent",
+                background: formStep === "reporte" ? "var(--surface, #ffffff)" : "transparent",
                 color: formStep === "reporte" ? "var(--primary)" : "var(--text-muted)",
                 fontWeight: formStep === "reporte" ? 800 : 600,
                 fontSize: "0.8rem",
                 boxShadow: formStep === "reporte" ? "0 2px 6px rgba(0,0,0,0.06)" : "none",
                 cursor: "pointer",
-                transition: "all 0.2s ease",
+                transition: "all 0.15s ease",
+                whiteSpace: "nowrap",
               }}
             >
               <FileSpreadsheet size={14} />
-              <span>1. Reporte (#{currentOrderId})</span>
+              <span>1. Reporte</span>
             </button>
 
             <button
@@ -1916,20 +1929,23 @@ export const ReportesView: React.FC = () => {
                 }
               }}
               style={{
+                flex: "1 1 auto",
+                minWidth: "130px",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
                 gap: "0.4rem",
-                padding: "0.6rem 0.5rem",
+                padding: "0.55rem 0.65rem",
                 borderRadius: "var(--radius-sm)",
                 border: "none",
-                background: formStep === "cotizacion" ? "var(--surface)" : "transparent",
+                background: formStep === "cotizacion" ? "var(--surface, #ffffff)" : "transparent",
                 color: formStep === "cotizacion" ? "var(--primary)" : "var(--text-muted)",
                 fontWeight: formStep === "cotizacion" ? 800 : 600,
                 fontSize: "0.8rem",
                 boxShadow: formStep === "cotizacion" ? "0 2px 6px rgba(0,0,0,0.06)" : "none",
                 cursor: "pointer",
-                transition: "all 0.2s ease",
+                transition: "all 0.15s ease",
+                whiteSpace: "nowrap",
               }}
             >
               <Calculator size={14} />
@@ -1943,20 +1959,23 @@ export const ReportesView: React.FC = () => {
                 setFormStep("firma");
               }}
               style={{
+                flex: "1 1 auto",
+                minWidth: "125px",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
                 gap: "0.4rem",
-                padding: "0.6rem 0.5rem",
+                padding: "0.55rem 0.65rem",
                 borderRadius: "var(--radius-sm)",
                 border: "none",
-                background: formStep === "firma" ? "var(--surface)" : "transparent",
+                background: formStep === "firma" ? "var(--surface, #ffffff)" : "transparent",
                 color: formStep === "firma" ? "#16a34a" : "var(--text-muted)",
                 fontWeight: formStep === "firma" ? 800 : 600,
                 fontSize: "0.8rem",
                 boxShadow: formStep === "firma" ? "0 2px 6px rgba(0,0,0,0.06)" : "none",
                 cursor: "pointer",
-                transition: "all 0.2s ease",
+                transition: "all 0.15s ease",
+                whiteSpace: "nowrap",
               }}
             >
               <PenTool size={14} />
@@ -1967,24 +1986,27 @@ export const ReportesView: React.FC = () => {
               type="button"
               onClick={() => setFormStep("proceso")}
               style={{
+                flex: "1 1 auto",
+                minWidth: "135px",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
                 gap: "0.4rem",
-                padding: "0.6rem 0.5rem",
+                padding: "0.55rem 0.65rem",
                 borderRadius: "var(--radius-sm)",
                 border: "none",
-                background: formStep === "proceso" ? "var(--surface)" : "transparent",
+                background: formStep === "proceso" ? "var(--surface, #ffffff)" : "transparent",
                 color: formStep === "proceso" ? "#0891b2" : "var(--text-muted)",
                 fontWeight: formStep === "proceso" ? 800 : 600,
                 fontSize: "0.8rem",
                 boxShadow: formStep === "proceso" ? "0 2px 6px rgba(0,0,0,0.06)" : "none",
                 cursor: "pointer",
-                transition: "all 0.2s ease",
+                transition: "all 0.15s ease",
+                whiteSpace: "nowrap",
               }}
             >
               <Activity size={14} />
-              <span>4. Proceso & Historial</span>
+              <span>4. Proceso en Vivo</span>
             </button>
           </div>
 
@@ -5128,9 +5150,12 @@ export const ReportesView: React.FC = () => {
         <Modal
           isOpen={accionDialogOpen}
           onClose={() => setAccionDialogOpen(false)}
-          title={`Acción Rápida: ${accionDialogData.titulo}`}
+          badge="WhatsApp"
+          title={accionDialogData.titulo}
+          subtitle={`Canal: ${accionDialogData.etiqueta}`}
           maxWidth="560px"
         >
+
           <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
             <p style={{ fontSize: "0.825rem", color: "var(--text-muted)", margin: 0 }}>
               Puedes ajustar el número de teléfono del destinatario y personalizar el mensaje antes de enviarlo por WhatsApp y registrarlo en el historial del caso.

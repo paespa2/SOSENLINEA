@@ -98,7 +98,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       category: "principal",
       items: [
         { id: "dashboard", label: "Panel Principal", icon: LayoutDashboard },
-        { id: "reportes-ordenes", label: "Reportes y Órdenes de Trabajo", icon: FileSpreadsheet, badge: pendingReportes },
+        { id: "reportes-ordenes", label: "Órdenes y Reportes", icon: FileSpreadsheet, badge: pendingReportes },
         { id: "cotizaciones", label: "Cotizaciones y Presupuestos", icon: Calculator },
         { id: "llaves", label: "Llaves (Gestión Activos)", icon: Key, badge: llavesPrestadas },
         { id: "impresiones", label: "Impresiones y Documentos", icon: Printer },
