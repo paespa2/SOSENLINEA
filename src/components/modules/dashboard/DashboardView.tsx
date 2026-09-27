@@ -673,7 +673,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onNavigate }) => {
       {/* ─────────────────────────────────────────────────────────────────── */}
       {/* 4. GRILLA PRINCIPAL: TABLA DE CASOS & SALUD OPERATIVA LATERAL       */}
       {/* ─────────────────────────────────────────────────────────────────── */}
-      <div style={{ display: "grid", gridTemplateColumns: "1.8fr 1fr", gap: "1.5rem", alignItems: "start" }}>
+      <div className="dashboard-main-grid">
         {/* COLUMNA IZQUIERDA: TABLA Y BUSCADOR DE CASOS */}
         <div className="card" style={{ padding: "1.5rem", borderRadius: "var(--radius-lg)", border: "1px solid var(--border-color)" }}>
           {/* Header de la Tabla con Buscador y Filtros Segmentados */}

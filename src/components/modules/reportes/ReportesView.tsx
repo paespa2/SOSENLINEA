@@ -1875,7 +1875,7 @@ export const ReportesView: React.FC = () => {
             className="step-tabs-header no-print"
             style={{
               display: "grid",
-              gridTemplateColumns: "repeat(4, 1fr)",
+              gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
               gap: "0.5rem",
               background: "var(--neutral-100, #f1f5f9)",
               padding: "0.4rem",
