@@ -1656,8 +1656,9 @@ export const ReportesView: React.FC = () => {
       </div>
 
       {/* Tabla de Reportes con Seguimiento de Momento a Momento */}
-      <div className="card no-print table-responsive-wrapper" style={{ padding: 0 }}>
-        <table className="data-table">
+      <div className="table-card no-print">
+        <div className="table-responsive-wrapper">
+          <table className="data-table">
           <thead>
             <tr>
               <th style={{ minWidth: "75px", width: "80px", textAlign: "center" }}># Orden</th>
@@ -1840,6 +1841,7 @@ export const ReportesView: React.FC = () => {
             )}
           </tbody>
         </table>
+        </div>
 
         {/* Footer elegante para rematar la tarjeta sin cortes abruptos */}
         <div className="table-footer-bar">

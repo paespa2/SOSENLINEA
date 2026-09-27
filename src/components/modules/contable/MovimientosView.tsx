@@ -226,8 +226,9 @@ export const MovimientosView: React.FC<MovimientosViewProps> = ({ initialType = 
       </div>
 
       {/* Tabla de Movimientos Responsiva */}
-      <div className="table-responsive-wrapper card" style={{ padding: 0 }}>
-        <table className="data-table" style={{ width: "100%", borderCollapse: "collapse", minWidth: "980px" }}>
+      <div className="table-card">
+        <div className="table-responsive-wrapper">
+          <table className="data-table" style={{ width: "100%", borderCollapse: "collapse", minWidth: "980px" }}>
           <thead>
             <tr>
               <th style={{ minWidth: "120px" }}>Comprobante</th>
@@ -250,8 +251,10 @@ export const MovimientosView: React.FC<MovimientosViewProps> = ({ initialType = 
             ) : (
               filtered.map((m) => (
                 <tr key={m.id}>
-                  <td style={{ fontFamily: "var(--font-mono)", fontWeight: 700, fontSize: "0.8rem", color: "var(--primary)" }}>
-                    {m.comprobanteNumero}
+                  <td>
+                    <span className="badge-order-id" style={{ cursor: "default" }}>
+                      {m.comprobanteNumero}
+                    </span>
                   </td>
                   <td style={{ fontSize: "0.785rem", whiteSpace: "nowrap" }}>{formatDateCO(m.fecha)}</td>
                   <td>
@@ -301,13 +304,27 @@ export const MovimientosView: React.FC<MovimientosViewProps> = ({ initialType = 
             )}
           </tbody>
         </table>
+        </div>
+
+        {/* Footer elegante para rematar la tarjeta sin cortes abruptos */}
+        <div className="table-footer-bar">
+          <span>
+            Mostrando <strong>{filtered.length}</strong> de <strong>{movements.length}</strong> asientos contables
+          </span>
+          <span style={{ display: "flex", alignItems: "center", gap: "0.45rem" }}>
+            <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#10b981", display: "inline-block" }} />
+            Libro Contable Sincronizado
+          </span>
+        </div>
       </div>
 
       {/* Modal Registrar Movimiento */}
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
+        badge={activeType}
         title={`Registrar Nuevo ${activeType}`}
+        subtitle={`Asiento contable para ${activeType === "Egreso" ? "egresos operativos y compras" : "ingresos y cobros"}`}
         maxWidth="620px"
         footer={
           <>

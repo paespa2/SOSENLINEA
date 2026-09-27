@@ -585,7 +585,9 @@ export const NovedadesView: React.FC = () => {
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        title="Reportar Nueva Novedad"
+        badge="Alerta"
+        title="Reportar Novedad"
+        subtitle="Incidencia o situación imprevista en terreno"
         maxWidth="550px"
         footer={
           <>
@@ -747,7 +749,9 @@ export const EncuestasView: React.FC = () => {
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        title="Registrar Encuesta de Satisfacción"
+        badge="Calidad"
+        title="Encuesta de Satisfacción"
+        subtitle="Valoración del cliente final y verificación de servicio"
         maxWidth="500px"
         footer={
           <>

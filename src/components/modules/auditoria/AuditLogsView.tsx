@@ -166,8 +166,9 @@ export const AuditLogsView: React.FC = () => {
       </div>
 
       {/* Tabla de Logs Responsiva */}
-      <div className="table-responsive-wrapper card" style={{ padding: 0 }}>
-        <table className="data-table" style={{ width: "100%", borderCollapse: "collapse", minWidth: "950px" }}>
+      <div className="table-card">
+        <div className="table-responsive-wrapper">
+          <table className="data-table" style={{ width: "100%", borderCollapse: "collapse", minWidth: "950px" }}>
           <thead>
             <tr>
               <th style={{ minWidth: "150px" }}>Timestamp (UTC)</th>
@@ -231,6 +232,18 @@ export const AuditLogsView: React.FC = () => {
             )}
           </tbody>
         </table>
+        </div>
+
+        {/* Footer elegante para rematar la tarjeta sin cortes abruptos */}
+        <div className="table-footer-bar">
+          <span>
+            Mostrando <strong>{filtered.length}</strong> de <strong>{logs.length}</strong> eventos de auditoría
+          </span>
+          <span style={{ display: "flex", alignItems: "center", gap: "0.45rem" }}>
+            <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#10b981", display: "inline-block" }} />
+            Trazabilidad Inmutable Activa
+          </span>
+        </div>
       </div>
     </div>
   );

@@ -134,8 +134,9 @@ export const ClientesView: React.FC = () => {
       </div>
 
       {/* Tabla de Clientes Responsiva */}
-      <div className="table-responsive-wrapper card" style={{ padding: 0 }}>
-        <table className="data-table" style={{ width: "100%", borderCollapse: "collapse", minWidth: "950px" }}>
+      <div className="table-card">
+        <div className="table-responsive-wrapper">
+          <table className="data-table" style={{ width: "100%", borderCollapse: "collapse", minWidth: "950px" }}>
           <thead>
             <tr>
               <th style={{ minWidth: "120px" }}>Documento / NIT</th>
@@ -157,7 +158,11 @@ export const ClientesView: React.FC = () => {
 
               return (
                 <tr key={cli.id}>
-                  <td style={{ fontFamily: "var(--font-mono)", fontWeight: 700, color: "var(--primary)" }}>{cli.documento}</td>
+                  <td>
+                    <span className="badge-order-id" style={{ cursor: "default" }}>
+                      {cli.documento}
+                    </span>
+                  </td>
                   <td style={{ fontWeight: 700 }}>{cli.nombre}</td>
                   <td>
                     <span
@@ -214,13 +219,27 @@ export const ClientesView: React.FC = () => {
             })}
           </tbody>
         </table>
+        </div>
+
+        {/* Footer elegante para rematar la tarjeta sin cortes abruptos */}
+        <div className="table-footer-bar">
+          <span>
+            Mostrando <strong>{filtered.length}</strong> de <strong>{clientes.length}</strong> clientes registrados
+          </span>
+          <span style={{ display: "flex", alignItems: "center", gap: "0.45rem" }}>
+            <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#10b981", display: "inline-block" }} />
+            Padrón Inmobiliario Sincronizado
+          </span>
+        </div>
       </div>
 
       {/* Modal Crear Cliente */}
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        title="Registrar Nuevo Cliente / Inmueble"
+        badge="Nuevo"
+        title="Registrar Cliente / Inmueble"
+        subtitle="Ficha de cliente, arrendatario o propietario con contrato"
         maxWidth="600px"
         footer={
           <>

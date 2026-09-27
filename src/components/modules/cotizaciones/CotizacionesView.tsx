@@ -522,7 +522,9 @@ export const CotizacionesView: React.FC = () => {
         <Modal
           isOpen={isEditModalOpen}
           onClose={() => setIsEditModalOpen(false)}
-          title={`Editar Cotización #${editingCot.idCotizacion} - Orden #${editingCot.idReporte}`}
+          badge={`#${editingCot.idCotizacion}`}
+          title="Editar Cotización"
+          subtitle={`Orden de Trabajo #${editingCot.idReporte} • ${editingCot.reporteDireccion || ''}`}
           maxWidth="850px"
           footer={
             <>
@@ -763,7 +765,9 @@ export const CotizacionesView: React.FC = () => {
         <Modal
           isOpen={isDetailModalOpen}
           onClose={() => setIsDetailModalOpen(false)}
-          title={`Documento Oficial: Cotización #${selectedCot.idCotizacion} (Orden #${selectedCot.idReporte})`}
+          badge={`#${selectedCot.idCotizacion}`}
+          title="Documento Oficial de Cotización"
+          subtitle={`Orden de Trabajo #${selectedCot.idReporte} • ${selectedCot.reporteDireccion || ''}`}
           maxWidth="850px"
           footer={
             <>
@@ -967,7 +971,9 @@ export const CotizacionesView: React.FC = () => {
         <Modal
           isOpen={isWhatsAppModalOpen}
           onClose={() => setIsWhatsAppModalOpen(false)}
-          title="Enviar Cotización por WhatsApp al Cliente"
+          badge="WhatsApp"
+          title="Enviar Cotización al Cliente"
+          subtitle={whatsAppData ? `${whatsAppData.destinatarioNombre} • Orden #${whatsAppData.idReporte}` : "Notificación directa con registro de auditoría"}
           maxWidth="580px"
           footer={
             <>

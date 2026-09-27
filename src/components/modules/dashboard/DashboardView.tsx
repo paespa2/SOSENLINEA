@@ -754,119 +754,121 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onNavigate }) => {
             </div>
           </div>
 
-          {/* Tabla de Registros */}
-          <div className="table-responsive-wrapper">
-            <table className="data-table">
-              <thead>
-                <tr>
-                  <th style={{ minWidth: "75px", width: "80px", textAlign: "center" }}>#</th>
-                  <th style={{ minWidth: "160px" }}>Inmueble & Solicitante</th>
-                  <th style={{ minWidth: "130px" }}>Especialidad</th>
-                  <th style={{ minWidth: "130px" }}>Cuadrilla</th>
-                  <th style={{ minWidth: "90px" }}>Avance</th>
-                  <th style={{ minWidth: "110px" }}>Estado</th>
-                  <th className="table-actions-sticky" style={{ textAlign: "right", minWidth: "85px" }}>Acción</th>
-                </tr>
-              </thead>
-              <tbody>
-                {ordenesFiltradas.length === 0 ? (
+          {/* Tabla de Registros en Tarjeta Estilizada con Remate Inferior */}
+          <div className="table-card" style={{ marginBottom: 0 }}>
+            <div className="table-responsive-wrapper">
+              <table className="data-table">
+                <thead>
                   <tr>
-                    <td colSpan={7} style={{ textAlign: "center", padding: "2.5rem 1rem", color: "var(--text-muted)" }}>
-                      <AlertCircle size={24} style={{ margin: "0 auto 0.5rem auto", opacity: 0.5 }} />
-                      <div>No se encontraron órdenes para los criterios seleccionados.</div>
-                    </td>
+                    <th style={{ minWidth: "75px", width: "80px", textAlign: "center" }}>#</th>
+                    <th style={{ minWidth: "160px" }}>Inmueble & Solicitante</th>
+                    <th style={{ minWidth: "130px" }}>Especialidad</th>
+                    <th style={{ minWidth: "130px" }}>Cuadrilla</th>
+                    <th style={{ minWidth: "90px" }}>Avance</th>
+                    <th style={{ minWidth: "110px" }}>Estado</th>
+                    <th className="table-actions-sticky" style={{ textAlign: "right", minWidth: "85px" }}>Acción</th>
                   </tr>
-                ) : (
-                  ordenesFiltradas.slice(0, 10).map((r) => {
-                    const percent = Math.round((r.tasaAvance || 0) * 100);
-                    return (
-                      <tr key={r.idRegistro}>
-                        <td style={{ textAlign: "center", width: "80px" }}>
-                          <button
-                            type="button"
-                            onClick={() => onNavigate("reportes-ordenes")}
-                            className="badge-order-id"
-                            title={`Radicado: ${r.codigoAlfanumerico || '#' + r.idRegistro} • Clic para ver`}
-                          >
-                            #{r.idRegistro}
-                          </button>
-                        </td>
+                </thead>
+                <tbody>
+                  {ordenesFiltradas.length === 0 ? (
+                    <tr>
+                      <td colSpan={7} style={{ textAlign: "center", padding: "2.5rem 1rem", color: "var(--text-muted)" }}>
+                        <AlertCircle size={24} style={{ margin: "0 auto 0.5rem auto", opacity: 0.5 }} />
+                        <div>No se encontraron órdenes para los criterios seleccionados.</div>
+                      </td>
+                    </tr>
+                  ) : (
+                    ordenesFiltradas.slice(0, 10).map((r) => {
+                      const percent = Math.round((r.tasaAvance || 0) * 100);
+                      return (
+                        <tr key={r.idRegistro}>
+                          <td style={{ textAlign: "center", width: "80px" }}>
+                            <button
+                              type="button"
+                              onClick={() => onNavigate("reportes-ordenes")}
+                              className="badge-order-id"
+                              title={`Radicado: ${r.codigoAlfanumerico || '#' + r.idRegistro} • Clic para ver`}
+                            >
+                              #{r.idRegistro}
+                            </button>
+                          </td>
 
-                        <td>
-                          <div style={{ fontWeight: 600, fontSize: "0.825rem", color: "var(--text-main)" }}>
-                            {r.direccion}
-                          </div>
-                          <div style={{ fontSize: "0.72rem", color: "var(--text-muted)", display: "flex", alignItems: "center", gap: "0.3rem", marginTop: "0.15rem" }}>
-                            <User size={11} />
-                            <span>{r.clienteNombre}</span>
-                            <span>•</span>
-                            <span>{r.fecha}</span>
-                          </div>
-                        </td>
+                          <td>
+                            <div style={{ fontWeight: 600, fontSize: "0.825rem", color: "var(--text-main)" }}>
+                              {r.direccion}
+                            </div>
+                            <div style={{ fontSize: "0.72rem", color: "var(--text-muted)", display: "flex", alignItems: "center", gap: "0.3rem", marginTop: "0.15rem" }}>
+                              <User size={11} />
+                              <span>{r.clienteNombre}</span>
+                              <span>•</span>
+                              <span>{r.fecha}</span>
+                            </div>
+                          </td>
 
-                        <td>
-                          <span
-                            style={{
-                              fontSize: "0.72rem",
-                              fontWeight: 600,
-                              background: "rgba(37, 99, 235, 0.08)",
-                              color: "var(--primary)",
-                              padding: "0.2rem 0.5rem",
-                              borderRadius: "6px",
-                            }}
-                          >
-                            {r.tipoTrabajo || "Mantenimiento"}
-                          </span>
-                        </td>
-
-                        <td>
-                          <div style={{ fontSize: "0.78rem", fontWeight: 600 }}>
-                            {r.contratistaNombre || "Sin asignar"}
-                          </div>
-                          <div style={{ fontSize: "0.68rem", color: "var(--text-muted)" }}>
-                            {r.sector}
-                          </div>
-                        </td>
-
-                        <td style={{ minWidth: "90px" }}>
-                          <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.7rem", marginBottom: "0.2rem" }}>
-                            <span style={{ fontWeight: 700 }}>{percent}%</span>
-                          </div>
-                          <div style={{ height: 5, background: "var(--neutral-200)", borderRadius: 3, overflow: "hidden" }}>
-                            <div
+                          <td>
+                            <span
                               style={{
-                                height: "100%",
-                                width: `${percent}%`,
-                                background: percent >= 80 ? "#10b981" : percent >= 40 ? "#f59e0b" : "#3b82f6",
-                                borderRadius: 3,
+                                fontSize: "0.72rem",
+                                fontWeight: 600,
+                                background: "rgba(37, 99, 235, 0.08)",
+                                color: "var(--primary)",
+                                padding: "0.2rem 0.5rem",
+                                borderRadius: "6px",
                               }}
-                            />
-                          </div>
-                        </td>
+                            >
+                              {r.tipoTrabajo || "Mantenimiento"}
+                            </span>
+                          </td>
 
-                        <td>
-                          <StatusBadge status={r.estado} size="sm" />
-                        </td>
+                          <td>
+                            <div style={{ fontSize: "0.78rem", fontWeight: 600 }}>
+                              {r.contratistaNombre || "Sin asignar"}
+                            </div>
+                            <div style={{ fontSize: "0.68rem", color: "var(--text-muted)" }}>
+                              {r.sector}
+                            </div>
+                          </td>
 
-                        <td className="table-actions-sticky" style={{ textAlign: "right" }}>
-                          <button
-                            type="button"
-                            onClick={() => onNavigate("reportes-ordenes")}
-                            className="btn btn-secondary btn-xs"
-                            style={{ padding: "0.3rem 0.55rem" }}
-                            title="Ver expediente completo"
-                          >
-                            <Eye size={13} />
-                          </button>
-                        </td>
-                      </tr>
-                    );
-                  })
-                )}
-              </tbody>
-            </table>
+                          <td style={{ minWidth: "90px" }}>
+                            <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.7rem", marginBottom: "0.2rem" }}>
+                              <span style={{ fontWeight: 700 }}>{percent}%</span>
+                            </div>
+                            <div style={{ height: 5, background: "var(--neutral-200)", borderRadius: 3, overflow: "hidden" }}>
+                              <div
+                                style={{
+                                  height: "100%",
+                                  width: `${percent}%`,
+                                  background: percent >= 80 ? "#10b981" : percent >= 40 ? "#f59e0b" : "#3b82f6",
+                                  borderRadius: 3,
+                                }}
+                              />
+                            </div>
+                          </td>
 
-            {/* Footer con contorno y paginación dentro de la tarjeta */}
+                          <td>
+                            <StatusBadge status={r.estado} size="sm" />
+                          </td>
+
+                          <td className="table-actions-sticky" style={{ textAlign: "right" }}>
+                            <button
+                              type="button"
+                              onClick={() => onNavigate("reportes-ordenes")}
+                              className="btn btn-secondary btn-xs"
+                              style={{ padding: "0.3rem 0.55rem" }}
+                              title="Ver expediente completo"
+                            >
+                              <Eye size={13} />
+                            </button>
+                          </td>
+                        </tr>
+                      );
+                    })
+                  )}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Footer con contorno y paginación en base firme de la tarjeta */}
             <div className="table-footer-bar">
               <span>
                 Mostrando {Math.min(10, ordenesFiltradas.length)} de {ordenesFiltradas.length} órdenes filtradas

@@ -177,8 +177,9 @@ export const CuentasCobroView: React.FC = () => {
       </div>
 
       {/* Tabla de Cuentas Responsiva */}
-      <div className="table-responsive-wrapper card" style={{ padding: 0 }}>
-        <table className="data-table" style={{ width: "100%", borderCollapse: "collapse", minWidth: "1050px" }}>
+      <div className="table-card">
+        <div className="table-responsive-wrapper">
+          <table className="data-table" style={{ width: "100%", borderCollapse: "collapse", minWidth: "1050px" }}>
           <thead>
             <tr>
               <th style={{ minWidth: "120px" }}>No. Cuenta</th>
@@ -202,8 +203,10 @@ export const CuentasCobroView: React.FC = () => {
             ) : (
               filtered.map((cc) => (
                 <tr key={cc.id}>
-                  <td style={{ fontWeight: 800, fontFamily: "var(--font-mono)", color: "var(--primary)" }}>
-                    {cc.numero}
+                  <td>
+                    <span className="badge-order-id" style={{ cursor: "default" }}>
+                      {cc.numero}
+                    </span>
                   </td>
                   <td style={{ fontSize: "0.75rem", whiteSpace: "nowrap" }}>
                     <div>{formatDateCO(cc.fecha)}</div>
@@ -250,13 +253,27 @@ export const CuentasCobroView: React.FC = () => {
             )}
           </tbody>
         </table>
+        </div>
+
+        {/* Footer elegante para rematar la tarjeta sin cortes abruptos */}
+        <div className="table-footer-bar">
+          <span>
+            Mostrando <strong>{filtered.length}</strong> de <strong>{cuentasCobro.length}</strong> cuentas de cobro
+          </span>
+          <span style={{ display: "flex", alignItems: "center", gap: "0.45rem" }}>
+            <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#10b981", display: "inline-block" }} />
+            Módulo Contable Sincronizado
+          </span>
+        </div>
       </div>
 
       {/* Modal Crear Cuenta de Cobro */}
       <Modal
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
+        badge="Nueva"
         title="Crear Nueva Cuenta de Cobro"
+        subtitle="Generación formal de cuenta de cobro y retención en la fuente"
         maxWidth="620px"
         footer={
           <>
@@ -390,7 +407,9 @@ export const CuentasCobroView: React.FC = () => {
         <Modal
           isOpen={isPrintModalOpen}
           onClose={() => setIsPrintModalOpen(false)}
-          title={`Vista Oficial - Cuenta de Cobro #${selectedCC.numero}`}
+          badge={selectedCC.numero}
+          title="Cuenta de Cobro Oficial"
+          subtitle={`${selectedCC.clienteNombre} • ${selectedCC.concepto}`}
           maxWidth="700px"
           footer={
             <>

@@ -217,8 +217,9 @@ export const ContratistasView: React.FC = () => {
       </div>
 
       {/* Tabla de Datos Responsiva */}
-      <div className="table-responsive-wrapper card" style={{ padding: 0 }}>
-        <table className="data-table" style={{ width: "100%", borderCollapse: "collapse", minWidth: "900px" }}>
+      <div className="table-card">
+        <div className="table-responsive-wrapper">
+          <table className="data-table" style={{ width: "100%", borderCollapse: "collapse", minWidth: "900px" }}>
           <thead>
             <tr>
               <th style={{ minWidth: "130px" }}>NIT (DIAN)</th>
@@ -241,10 +242,10 @@ export const ContratistasView: React.FC = () => {
               filtered.map((c) => (
                 <tr key={c.id}>
                   <td>
-                    <div style={{ fontWeight: 800, fontFamily: "var(--font-mono)", fontSize: "0.85rem", color: "var(--primary)" }}>
+                    <span className="badge-order-id" style={{ cursor: "default", fontSize: "0.8rem" }}>
                       {formatDianNit(c.nit, c.dv)}
-                    </div>
-                    <div style={{ fontSize: "0.7rem", color: "var(--text-muted)" }}>DV: {c.dv} (Válido)</div>
+                    </span>
+                    <div style={{ fontSize: "0.7rem", color: "var(--text-muted)", marginTop: "0.2rem" }}>DV: {c.dv} (Válido)</div>
                   </td>
                   <td>
                     <div style={{ fontWeight: 700, fontSize: "0.875rem" }}>{c.nombre}</div>
@@ -322,13 +323,27 @@ export const ContratistasView: React.FC = () => {
             )}
           </tbody>
         </table>
+        </div>
+
+        {/* Footer elegante para rematar la tarjeta sin cortes abruptos */}
+        <div className="table-footer-bar">
+          <span>
+            Mostrando <strong>{filtered.length}</strong> de <strong>{contractors.length}</strong> terceros registrados
+          </span>
+          <span style={{ display: "flex", alignItems: "center", gap: "0.45rem" }}>
+            <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#10b981", display: "inline-block" }} />
+            Padrón de Contratistas Sincronizado
+          </span>
+        </div>
       </div>
 
       {/* Modal Crear / Editar Tercero */}
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        title={editingId ? "Editar Información de Tercero" : "Registrar Nuevo Contratista o Proveedor"}
+        badge={editingId ? "Editar" : "Nuevo"}
+        title={editingId ? "Editar Información de Tercero" : "Registrar Tercero"}
+        subtitle="Ficha de datos comerciales, DIAN NIT, bancarios y especialidad"
         maxWidth="680px"
         footer={
           <>

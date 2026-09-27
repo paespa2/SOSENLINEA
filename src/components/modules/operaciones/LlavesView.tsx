@@ -166,7 +166,7 @@ export const LlavesView: React.FC = () => {
           <div key={k.id} className="card" style={{ display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
             <div>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "0.75rem" }}>
-                <span style={{ fontFamily: "var(--font-mono)", fontWeight: 800, color: "var(--primary)", fontSize: "0.85rem" }}>
+                <span className="badge-order-id" style={{ cursor: "default" }}>
                   {k.codigo}
                 </span>
                 <StatusBadge status={k.estado} size="sm" />
@@ -225,7 +225,9 @@ export const LlavesView: React.FC = () => {
         <Modal
           isOpen={isLendModalOpen}
           onClose={() => setIsLendModalOpen(false)}
-          title={`Prestar Llave - ${selectedKey.codigo}`}
+          badge={selectedKey.codigo}
+          title="Prestar Llave Inmobiliaria"
+          subtitle={`${selectedKey.inmueble} • ${selectedKey.direccion}`}
           maxWidth="500px"
           footer={
             <>
@@ -267,7 +269,9 @@ export const LlavesView: React.FC = () => {
       <Modal
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
-        title="Registrar Nueva Llave Inmobiliaria"
+        badge="Nueva"
+        title="Registrar Llave Inmobiliaria"
+        subtitle="Asignación y registro en el llavero maestro de custodia"
         maxWidth="580px"
         footer={
           <>

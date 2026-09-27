@@ -148,7 +148,9 @@ export const HerramientasView: React.FC = () => {
         <Modal
           isOpen={isAssignModalOpen}
           onClose={() => setIsAssignModalOpen(false)}
-          title={`Asignar Herramienta: ${selectedHer.nombre}`}
+          badge={selectedHer.codigo}
+          title="Asignar Herramienta"
+          subtitle={`${selectedHer.nombre} • ${selectedHer.grupo}`}
           maxWidth="500px"
           footer={
             <>
@@ -182,7 +184,9 @@ export const HerramientasView: React.FC = () => {
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        title="Registrar Nueva Herramienta"
+        badge="Nueva"
+        title="Registrar Herramienta"
+        subtitle="Incorporación al inventario de dotación técnica y custodia"
         maxWidth="550px"
         footer={
           <>

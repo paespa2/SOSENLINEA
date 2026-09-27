@@ -146,8 +146,9 @@ export const MaterialesView: React.FC = () => {
       </div>
 
       {/* Tabla de Materiales */}
-      <div className="table-responsive-wrapper card" style={{ padding: 0 }}>
-        <table className="data-table" style={{ width: "100%", borderCollapse: "collapse", minWidth: "900px" }}>
+      <div className="table-card">
+        <div className="table-responsive-wrapper">
+          <table className="data-table" style={{ width: "100%", borderCollapse: "collapse", minWidth: "900px" }}>
           <thead>
             <tr>
               <th style={{ minWidth: "90px" }}>Código</th>
@@ -165,7 +166,9 @@ export const MaterialesView: React.FC = () => {
           <tbody>
             {filtered.map((m) => (
               <tr key={m.id}>
-                <td style={{ fontFamily: "var(--font-mono)", fontWeight: 700, color: "var(--primary)" }}>{m.codigo}</td>
+                <td>
+                  <span className="badge-order-id" style={{ cursor: "default" }}>{m.codigo}</span>
+                </td>
                 <td style={{ fontWeight: 700 }}>{m.nombre}</td>
                 <td>
                   <span style={{ background: "var(--neutral-100)", padding: "0.15rem 0.5rem", borderRadius: "4px", fontSize: "0.75rem" }}>
@@ -193,13 +196,27 @@ export const MaterialesView: React.FC = () => {
             ))}
           </tbody>
         </table>
+        </div>
+
+        {/* Footer elegante para rematar la tarjeta sin cortes abruptos */}
+        <div className="table-footer-bar">
+          <span>
+            Mostrando <strong>{filtered.length}</strong> de <strong>{materiales.length}</strong> materiales en catálogo
+          </span>
+          <span style={{ display: "flex", alignItems: "center", gap: "0.45rem" }}>
+            <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#10b981", display: "inline-block" }} />
+            Inventario Sincronizado
+          </span>
+        </div>
       </div>
 
       {/* Modal Crear Material */}
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        title="Crear Nuevo Material en Catálogo"
+        badge="Catálogo"
+        title="Crear Nuevo Material"
+        subtitle="Alta de ítem en inventario, precios de referencia y umbral mínimo"
         maxWidth="600px"
         footer={
           <>

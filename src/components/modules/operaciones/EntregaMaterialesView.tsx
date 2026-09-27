@@ -92,8 +92,9 @@ export const EntregaMaterialesView: React.FC = () => {
         </div>
       </div>
 
-      <div className="table-responsive-wrapper card" style={{ padding: 0 }}>
-        <table className="data-table" style={{ width: "100%", borderCollapse: "collapse", minWidth: "850px" }}>
+      <div className="table-card">
+        <div className="table-responsive-wrapper">
+          <table className="data-table" style={{ width: "100%", borderCollapse: "collapse", minWidth: "850px" }}>
           <thead>
             <tr>
               <th style={{ minWidth: "110px" }}>Fecha</th>
@@ -109,7 +110,9 @@ export const EntregaMaterialesView: React.FC = () => {
             {filtered.map((item) => (
               <tr key={item.id}>
                 <td style={{ fontSize: "0.8rem", whiteSpace: "nowrap" }}>{formatDateCO(item.fecha)}</td>
-                <td style={{ fontWeight: 700, fontSize: "0.85rem", color: "var(--primary)" }}>{item.ordenTrabajo}</td>
+                <td>
+                  <span className="badge-order-id" style={{ cursor: "default" }}>{item.ordenTrabajo}</span>
+                </td>
                 <td style={{ fontWeight: 600 }}>{item.materialNombre}</td>
                 <td style={{ fontFamily: "var(--font-mono)", fontWeight: 800 }}>
                   {item.cantidad} {item.unidad}
@@ -121,13 +124,27 @@ export const EntregaMaterialesView: React.FC = () => {
             ))}
           </tbody>
         </table>
+        </div>
+
+        {/* Footer elegante para rematar la tarjeta sin cortes abruptos */}
+        <div className="table-footer-bar">
+          <span>
+            Mostrando <strong>{filtered.length}</strong> de <strong>{entregasMateriales.length}</strong> actas de entrega
+          </span>
+          <span style={{ display: "flex", alignItems: "center", gap: "0.45rem" }}>
+            <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#10b981", display: "inline-block" }} />
+            Despachos Sincronizados
+          </span>
+        </div>
       </div>
 
       {/* Modal Registrar Entrega */}
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        title="Registrar Salida / Entrega de Material"
+        badge="Salida"
+        title="Registrar Entrega de Material"
+        subtitle="Despacho en obra y firma de recepción de insumos"
         maxWidth="600px"
         footer={
           <>

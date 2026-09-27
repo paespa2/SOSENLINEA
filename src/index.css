@@ -271,6 +271,25 @@ body {
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
 }
 
+/* Contenedor tipo Tarjeta de Tabla (Estandarización 2026-2027) */
+.table-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+  margin-bottom: 2rem;
+  width: 100%;
+  position: relative;
+}
+
+.table-card > .table-responsive-wrapper {
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  margin-bottom: 0;
+}
+
 /* Tablas con diseño ejecutivo y responsivo Dual-Zoom (Resistente a Zoom Encoje y Expande) */
 .data-table-container,
 .table-responsive-wrapper {
@@ -347,8 +366,11 @@ body {
   font-size: 0.78rem;
   color: var(--text-muted);
   font-weight: 500;
-  border-bottom-left-radius: var(--radius-lg);
-  border-bottom-right-radius: var(--radius-lg);
+  border-bottom-left-radius: inherit;
+  border-bottom-right-radius: inherit;
+  width: 100%;
+  position: relative;
+  z-index: 2;
 }
 
 

@@ -131,7 +131,9 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onCl
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title="Configuración de Cuenta & Perfil de Usuario"
+      badge={currentRole.toUpperCase()}
+      title="Perfil de Usuario"
+      subtitle="Credenciales, firma digital y preferencias del sistema"
       maxWidth="620px"
     >
       <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>

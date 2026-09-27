@@ -72,7 +72,7 @@ export const SectoresView: React.FC = () => {
         {filtered.map((sec) => (
           <div key={sec.id} className="card">
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "0.5rem" }}>
-              <span style={{ fontFamily: "var(--font-mono)", fontWeight: 700, color: "var(--primary)", fontSize: "0.8rem" }}>
+              <span className="badge-order-id" style={{ cursor: "default" }}>
                 {sec.codigo}
               </span>
               <span
@@ -105,7 +105,9 @@ export const SectoresView: React.FC = () => {
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
+        badge="Sector"
         title="Registrar Nuevo Sector"
+        subtitle="Zona operativa, ruta asignada y responsable territorial"
         maxWidth="500px"
         footer={
           <>
