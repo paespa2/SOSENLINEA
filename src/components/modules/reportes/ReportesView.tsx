@@ -1661,15 +1661,15 @@ export const ReportesView: React.FC = () => {
           <table className="data-table">
           <thead>
             <tr>
-              <th style={{ minWidth: "75px", width: "80px", textAlign: "center" }}># Orden</th>
-              <th style={{ minWidth: "120px" }}>Fecha / Actualizado</th>
-              <th style={{ minWidth: "160px" }}>Inmueble / Rutas</th>
-              <th style={{ minWidth: "150px" }}>Participantes & Identificación</th>
-              <th style={{ minWidth: "135px" }}>Técnicos & Contratista</th>
-              <th style={{ textAlign: "right", minWidth: "110px" }}>Total Cotizado</th>
-              <th style={{ minWidth: "90px" }}>Avance</th>
-              <th className="table-col-before-sticky" style={{ minWidth: "135px" }}>Estado Actual</th>
-              <th className="table-actions-sticky" style={{ textAlign: "right", minWidth: "155px" }}>
+              <th style={{ minWidth: "65px", width: "70px", textAlign: "center" }}>#</th>
+              <th style={{ minWidth: "95px" }}>Fecha</th>
+              <th style={{ minWidth: "150px" }}>Inmueble / Rutas</th>
+              <th style={{ minWidth: "130px" }}>Participantes</th>
+              <th style={{ minWidth: "120px" }}>Cuadrilla</th>
+              <th style={{ textAlign: "right", minWidth: "95px" }}>Total</th>
+              <th style={{ minWidth: "75px" }}>Avance</th>
+              <th style={{ minWidth: "105px" }}>Estado</th>
+              <th className="table-actions-sticky" style={{ textAlign: "right", minWidth: "140px" }}>
                 Acciones
               </th>
             </tr>
@@ -1684,7 +1684,7 @@ export const ReportesView: React.FC = () => {
             ) : (
               filtered.map((r) => (
                 <tr key={r.idRegistro}>
-                  <td style={{ fontFamily: "var(--font-mono)", textAlign: "center", width: "80px" }}>
+                  <td style={{ fontFamily: "var(--font-mono)", textAlign: "center", width: "70px" }}>
                     <button
                       type="button"
                       onClick={() => handleOpenEdit(r, "proceso")}
@@ -1783,10 +1783,10 @@ export const ReportesView: React.FC = () => {
                       </span>
                     </div>
                   </td>
-                  <td className="table-col-before-sticky" style={{ minWidth: "135px", whiteSpace: "nowrap" }}>
+                  <td style={{ whiteSpace: "nowrap" }}>
                     <StatusBadge status={r.estado} size="sm" />
                   </td>
-                  <td className="table-actions-sticky" style={{ textAlign: "right", minWidth: "155px" }}>
+                  <td className="table-actions-sticky" style={{ textAlign: "right", minWidth: "140px" }}>
                     <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: "0.35rem" }}>
                       {can("edit") && (
                         <>

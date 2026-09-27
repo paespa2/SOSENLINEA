@@ -156,7 +156,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         display: "flex",
         flexDirection: "column",
         height: "100%",
-        padding: isCollapsed ? "1rem 0.4rem" : "1.25rem 0.75rem 2rem 0.75rem",
+        padding: isCollapsed ? "1rem 0.4rem" : "1.25rem 0.75rem 1rem 0.75rem",
       }}
     >
       {/* Botón cerrar si es vista móvil */}
@@ -427,12 +427,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
         className={`sidebar no-print ${isCollapsed ? "sidebar-collapsed" : ""}`}
         style={{
           width: isCollapsed ? "72px" : "270px",
-          height: "calc(100vh - 64px)",
+          height: "100vh",
           background: "var(--bg-sidebar)",
           borderRight: "1px solid rgba(255, 255, 255, 0.08)",
           display: "flex",
           flexDirection: "column",
-          overflowY: "auto",
+          overflow: "hidden",
           userSelect: "none",
           transition: "width 0.25s cubic-bezier(0.4, 0, 0.2, 1)",
           flexShrink: 0,
