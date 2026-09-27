@@ -40,7 +40,6 @@ import {
   Globe
 } from "lucide-react";
 import { useLanguage } from "../../context/LanguageContext";
-import { GoogleFlowBackground } from "./GoogleFlowBackground";
 import "./HomePage.css";
 
 interface HomePageProps {
@@ -611,9 +610,6 @@ export const HomePage: React.FC<HomePageProps> = ({ onEnterApp }) => {
           HERO SECTION (Diseño Soluman.co)
       ───────────────────────────────────────────────────────────────── */}
       <section className="home-hero" id="hero">
-        {/* Fondo Interactivo Animado con Flow de Google y Parallax en Scroll */}
-        <GoogleFlowBackground />
-        
         <div className="home-hero-glow" />
         <div className="home-hero-glow-left" />
 
