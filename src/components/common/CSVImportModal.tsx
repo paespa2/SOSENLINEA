@@ -30,9 +30,10 @@ export const CSVImportModal: React.FC<CSVImportModalProps> = ({
   onClose,
   defaultEntity = "reportes",
 }) => {
-  const { reportes, addReporte, addMaterial } = useData();
+  const { reportes, addMaterial, importReportesBatch, clearReportes } = useData();
 
   const [entityType, setEntityType] = useState<"reportes" | "materiales">(defaultEntity);
+  const [importMode, setImportMode] = useState<"replace" | "append">("replace");
   const [file, setFile] = useState<File | null>(null);
   const [rawText, setRawText] = useState<string>("");
   const [headers, setHeaders] = useState<string[]>([]);
@@ -86,6 +87,7 @@ export const CSVImportModal: React.FC<CSVImportModalProps> = ({
         result.push(cur.trim());
         cur = "";
       } else {
+        padCell:
         cur += c;
       }
     }
@@ -128,20 +130,25 @@ export const CSVImportModal: React.FC<CSVImportModalProps> = ({
 
     setParsedRows(dataRows);
 
-    // Initial intelligent field mapping
+    // Mapeo inteligente avanzado para el estándar ERP SOSENLINEA
     const mappings: ColumnMapping[] = headerRow.map((h) => {
       const lower = h.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
       let target = "";
 
       if (entityType === "reportes") {
-        if (/id|codigo|orden|radicado|caso/.test(lower)) target = "id_registro";
+        if (/radicado|id|codigo|orden|caso/.test(lower)) target = "id_registro";
         else if (/direcc|inmueble|ubicac|direccion|predio/.test(lower)) target = "direccion";
-        else if (/cliente|propiet|solicit|nombre|inmobiliaria/.test(lower)) target = "cliente";
-        else if (/tipo|trabajo|categoria|servicio|actividad/.test(lower)) target = "tipoTrabajo";
+        else if (/sector|barrio|comuna|ciudad|zona/.test(lower)) target = "sector";
+        else if (/cliente|inmobiliaria|solicit|empresa/.test(lower)) target = "cliente";
+        else if (/arrendat|inquilino|ocupante/.test(lower)) target = "arrendatario";
+        else if (/propiet|dueno|poseedor/.test(lower)) target = "propietario";
+        else if (/quien|contrata/.test(lower)) target = "quienContrata";
+        else if (/tipo|trabajo|categoria|servicio|actividad|especialidad/.test(lower)) target = "tipoTrabajo";
         else if (/estado|status|fase/.test(lower)) target = "estado";
+        else if (/avance|porcentaje|tasa/.test(lower)) target = "tasaAvance";
         else if (/valor|monto|precio|costo|presupuesto|total/.test(lower)) target = "totalCotizacion";
         else if (/fecha|creado|dia/.test(lower)) target = "fecha";
-        else if (/tecnico|contratista|operario|responsable/.test(lower)) target = "tecnico";
+        else if (/tecnico|contratista|operario|responsable|cuadrilla/.test(lower)) target = "tecnico";
         else if (/descrip|detalle|observac|nota/.test(lower)) target = "descripcion";
       } else {
         if (/codigo|ref|sku/.test(lower)) target = "codigo";
@@ -178,13 +185,13 @@ export const CSVImportModal: React.FC<CSVImportModalProps> = ({
     let filename = "";
 
     if (entityType === "reportes") {
-      filename = "plantilla_reportes_sosenlinea.csv";
-      csvHeader = "ID_Registro;Direccion;Cliente;Tipo_Trabajo;Estado;Total_Cotizacion;Tecnico;Descripcion";
-      sampleRow = "ORD-2026-001;Calle 10 # 43E-12 Medellín;Inmobiliaria Las Palmas;Mantenimiento Eléctrico;Aprobado;350000;Carlos Pérez;Reparación de acometida general";
+      filename = "plantilla_modelo_reportes_sosenlinea.csv";
+      csvHeader = "Radicado;Fecha;Direccion_Inmueble;Sector;Cliente_Inmobiliaria;Arrendatario;Propietario;Quien_Contrata;Tipo_Trabajo;Contratista_Asignado;Total_Cotizado;Avance_Porcentaje;Estado;Descripcion_Detalle";
+      sampleRow = "#1001;2026-09-27;Cra 43A # 18 Sur - 120, Apto 502;El Poblado;Inversiones Santa María;Juan David Gómez;Marta Helena Vélez;Propietario;Mantenimiento General;ESTRUCTURAS Y CONSTRUCCIONES S.A.S.;3800000;65;Cotizado;Reparación de filtración en tubería principal y resane general\r\n#1002;2026-09-25;Calle 116 # 15-40, Oficina 401;Usaquén;Corporación Inmobiliaria Andina;Dra. Sofía Zambrano;Fiduciaria Central;Inmobiliaria;Mantenimiento Eléctrico;ELECTRICOS Y REDES DEL VALLE E.U.;1280000;100;Ejecutado;Mantenimiento preventivo tablero trifásico y balanceo de cargas\r\n#1003;2026-09-24;Circular 73 # 39B-24, Casa;Laureles;Inmuebles La Floresta;Esteban Arango;Guillermo León;Arrendatario;Plomería;SERVICIOS INTEGRALES DE PLOMERÍA TERCEROS;650000;15;Borrador;Revisión de fuga en llave de paso y empaque de sifón\r\n#1004;2026-09-20;Transversal 39 # 72-10;Laureles;Inversiones Santa María;Carolina Montoya;Roberto Botero;Propietario;Mampostería y Pintura;ESTRUCTURAS Y CONSTRUCCIONES S.A.S.;4200000;100;Cobrado;Resane de humedades y pintura general de fachada";
     } else {
-      filename = "plantilla_materiales_sosenlinea.csv";
-      csvHeader = "Codigo;Nombre_Material;Unidad;Precio_Unitario;Stock";
-      sampleRow = "MAT-010;Cable THHN #12 Blanco;Metro;3200;150";
+      filename = "plantilla_modelo_materiales_sosenlinea.csv";
+      csvHeader = "Codigo;Nombre_Material;Categoria;Unidad;Precio_Unitario;Stock_Actual;Stock_Minimo;Ubicacion;Estado";
+      sampleRow = "MAT-101;Cable THHN #12 Blanco;Eléctricos;Metro;3200;250;50;Bodega Principal - Estante E1;Optimo\r\nMAT-102;Breaker Termomagnético 20A;Eléctricos;Unidad;18500;45;10;Bodega Principal - Estante E2;Optimo\r\nMAT-103;Tubo PVC Presión 1/2 pulgada;Plomería;Tira 6m;14200;60;15;Bodega Principal - Patio Tubos;Optimo";
     }
 
     const blob = new Blob(["\uFEFF" + `${csvHeader}\r\n${sampleRow}\r\n`], { type: "text/csv;charset=utf-8;" });
@@ -206,6 +213,8 @@ export const CSVImportModal: React.FC<CSVImportModalProps> = ({
 
     try {
       if (entityType === "reportes") {
+        const batchList: Omit<ReporteOrden, "idRegistro">[] = [];
+
         for (const row of parsedRows) {
           try {
             const sanitizeCsvCell = (val: string): string => {
@@ -222,34 +231,41 @@ export const CSVImportModal: React.FC<CSVImportModalProps> = ({
             };
 
             const direccion = getVal("direccion") || "Dirección no especificada";
+            const sector = getVal("sector") || "Medellín Centro";
             const cliente = getVal("cliente") || "Cliente General";
+            const arrendatario = getVal("arrendatario") || "";
+            const propietario = getVal("propietario") || "";
+            const quienContrata = (getVal("quienContrata") as "Propietario" | "Arrendatario" | "Inmobiliaria") || "Propietario";
             const tipoTrabajo = getVal("tipoTrabajo") || "Mantenimiento General";
-            const estado = (getVal("estado") as ReporteEstado) || "Recibido";
+            const contratista = getVal("tecnico") || "Cuadrilla SOS";
+            const estado = (getVal("estado") as ReporteEstado) || "Cotizado";
             const rawValor = getVal("totalCotizacion").replace(/[^0-9.-]+/g, "");
             const valor = parseFloat(rawValor) || 0;
+            const rawAvance = getVal("tasaAvance").replace(/[^0-9.]+/g, "");
+            const numAvance = rawAvance
+              ? parseFloat(rawAvance) / (parseFloat(rawAvance) > 1 ? 100 : 1)
+              : (estado === "Ejecutado" || estado === "Cobrado" ? 1.0 : 0.1);
             const desc = getVal("descripcion") || "Registro importado mediante carga masiva CSV.";
             const customId = getVal("id_registro");
-
-            const nextCodeNum = 1000 + reportes.length + count + 1;
-            const generatedCode = customId || `SOS-${nextCodeNum}`;
+            const fecha = getVal("fecha") || new Date().toISOString().split("T")[0];
 
             const newRep: Omit<ReporteOrden, "idRegistro"> = {
-              codigoAlfanumerico: generatedCode,
+              codigoAlfanumerico: customId || undefined,
               tipoTrabajo: tipoTrabajo,
               idContratante: "CLI-001",
               clienteNombre: cliente,
-              arrendatario: "",
-              propietario: "",
-              quienContrata: "Propietario",
+              arrendatario: arrendatario,
+              propietario: propietario,
+              quienContrata: quienContrata,
               direccion: direccion,
-              sector: "Medellín Centro",
-              fecha: new Date().toISOString().split("T")[0],
+              sector: sector,
+              fecha: fecha,
               idContratista: "CON-001",
-              contratistaNombre: "Cuadrilla SOS",
+              contratistaNombre: contratista,
               estado: estado,
               reporte: desc,
               totalCotizacion: valor,
-              tasaAvance: 0,
+              tasaAvance: numAvance,
               historial: [
                 {
                   id: "hist-import-" + Date.now() + "-" + count,
@@ -262,11 +278,15 @@ export const CSVImportModal: React.FC<CSVImportModalProps> = ({
               ],
             };
 
-            addReporte(newRep);
+            batchList.push(newRep);
             count++;
           } catch (rowErr) {
             errors.push(`Error en fila: ${(rowErr as Error).message}`);
           }
+        }
+
+        if (batchList.length > 0) {
+          importReportesBatch(batchList, importMode === "replace");
         }
       } else {
         // Importar Materiales
@@ -531,6 +551,62 @@ export const CSVImportModal: React.FC<CSVImportModalProps> = ({
                 </button>
               </div>
 
+              {/* Selector de Modo: Base de Datos Nueva vs Anexar */}
+              <div
+                style={{
+                  background: importMode === "replace" ? "rgba(37, 99, 235, 0.08)" : "rgba(255, 255, 255, 0.04)",
+                  border: importMode === "replace" ? "1px solid rgba(59, 130, 246, 0.35)" : "1px solid var(--border-color)",
+                  borderRadius: "10px",
+                  padding: "0.85rem 1rem",
+                  marginBottom: "1.25rem",
+                }}
+              >
+                <label style={{ fontSize: "0.825rem", fontWeight: 800, color: "var(--text-main)", display: "block", marginBottom: "0.5rem" }}>
+                  🎯 Modo de Inicialización de la Base de Datos:
+                </label>
+                <div style={{ display: "flex", gap: "1.25rem", flexWrap: "wrap" }}>
+                  <label
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "0.45rem",
+                      cursor: "pointer",
+                      fontSize: "0.825rem",
+                      fontWeight: importMode === "replace" ? 700 : 500,
+                      color: importMode === "replace" ? "var(--primary)" : "var(--text-main)",
+                    }}
+                  >
+                    <input
+                      type="radio"
+                      name="importMode"
+                      checked={importMode === "replace"}
+                      onChange={() => setImportMode("replace")}
+                    />
+                    <span>✨ Iniciar con Base de Datos Nueva (Reemplazar registros anteriores)</span>
+                  </label>
+
+                  <label
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "0.45rem",
+                      cursor: "pointer",
+                      fontSize: "0.825rem",
+                      fontWeight: importMode === "append" ? 700 : 500,
+                      color: importMode === "append" ? "var(--primary)" : "var(--text-muted)",
+                    }}
+                  >
+                    <input
+                      type="radio"
+                      name="importMode"
+                      checked={importMode === "append"}
+                      onChange={() => setImportMode("append")}
+                    />
+                    <span>➕ Anexar a la base de datos existente</span>
+                  </label>
+                </div>
+              </div>
+
               {/* Drag & Drop Area */}
               <div
                 style={{
@@ -671,15 +747,20 @@ export const CSVImportModal: React.FC<CSVImportModalProps> = ({
                             <option value="">-- Ignorar esta columna --</option>
                             {entityType === "reportes" ? (
                               <>
-                                <option value="id_registro">ID / Radicado de Orden</option>
+                                <option value="id_registro">Radicado / ID de Orden (#1001)</option>
+                                <option value="fecha">Fecha (YYYY-MM-DD)</option>
                                 <option value="direccion">Dirección del Inmueble</option>
-                                <option value="cliente">Cliente / Solicitante</option>
+                                <option value="sector">Sector / Barrio / Ciudad</option>
+                                <option value="cliente">Cliente / Inmobiliaria</option>
+                                <option value="arrendatario">Arrendatario / Inquilino</option>
+                                <option value="propietario">Propietario / Dueño</option>
+                                <option value="quienContrata">Quién Contrata (Propietario / Arrendatario / Inmobiliaria)</option>
                                 <option value="tipoTrabajo">Tipo de Trabajo / Especialidad</option>
+                                <option value="tecnico">Contratista / Técnico Asignado</option>
+                                <option value="totalCotizacion">Total Cotizado ($ COP)</option>
+                                <option value="tasaAvance">Porcentaje Avance (0 - 100%)</option>
                                 <option value="estado">Estado del Caso</option>
-                                <option value="totalCotizacion">Valor / Monto de Cotización</option>
-                                <option value="fecha">Fecha</option>
-                                <option value="tecnico">Técnico / Responsable</option>
-                                <option value="descripcion">Descripción / Notas</option>
+                                <option value="descripcion">Descripción / Detalle</option>
                               </>
                             ) : (
                               <>
@@ -704,11 +785,28 @@ export const CSVImportModal: React.FC<CSVImportModalProps> = ({
           {step === "preview" && (
             <div>
               <div style={{ marginBottom: "1rem" }}>
-                <h4 style={{ fontWeight: 800, margin: 0 }}>Vista Previa de la Importación</h4>
-                <p style={{ fontSize: "0.8rem", color: "var(--text-muted)", margin: "0.2rem 0 0 0" }}>
-                  Se importarán <strong>{parsedRows.length}</strong> registros al módulo de{" "}
-                  <strong>{entityType === "reportes" ? "Reportes y Órdenes" : "Materiales"}</strong>.
-                </p>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: "0.5rem" }}>
+                  <div>
+                    <h4 style={{ fontWeight: 800, margin: 0 }}>Vista Previa de la Importación</h4>
+                    <p style={{ fontSize: "0.8rem", color: "var(--text-muted)", margin: "0.2rem 0 0 0" }}>
+                      Se importarán <strong>{parsedRows.length}</strong> registros al módulo de{" "}
+                      <strong>{entityType === "reportes" ? "Reportes y Órdenes" : "Materiales"}</strong>.
+                    </p>
+                  </div>
+                  <span
+                    style={{
+                      background: importMode === "replace" ? "rgba(37, 99, 235, 0.12)" : "rgba(16, 185, 129, 0.12)",
+                      color: importMode === "replace" ? "#2563eb" : "#059669",
+                      border: importMode === "replace" ? "1px solid rgba(37, 99, 235, 0.3)" : "1px solid rgba(16, 185, 129, 0.3)",
+                      padding: "0.3rem 0.65rem",
+                      borderRadius: "6px",
+                      fontSize: "0.75rem",
+                      fontWeight: 700,
+                    }}
+                  >
+                    {importMode === "replace" ? "✨ Base de Datos Nueva (Reemplazo Limpio)" : "➕ Modo Anexar"}
+                  </span>
+                </div>
               </div>
 
               <div
@@ -888,7 +986,8 @@ export const CSVImportModal: React.FC<CSVImportModalProps> = ({
                   ) : (
                     <>
                       <CheckCircle2 size={14} />
-                      Confirmar e Importar {parsedRows.length} Registros
+                      {importMode === "replace" ? "✨ Inicializar Nueva BD (" : "Confirmar e Importar ("}
+                      {parsedRows.length} Registros)
                     </>
                   )}
                 </button>

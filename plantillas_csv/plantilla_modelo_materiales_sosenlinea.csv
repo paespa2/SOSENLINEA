@@ -1,0 +1,9 @@
+Codigo;Nombre_Material;Categoria;Unidad;Precio_Unitario;Stock_Actual;Stock_Minimo;Ubicacion;Estado
+MAT-101;Cable THHN #12 Blanco;Eléctricos;Metro;3200;250;50;Bodega Principal - Estante E1;Optimo
+MAT-102;Breaker Termomagnético 20A;Eléctricos;Unidad;18500;45;10;Bodega Principal - Estante E2;Optimo
+MAT-103;Tubo PVC Presión 1/2 pulgada;Plomería;Tira 6m;14200;60;15;Bodega Principal - Patio Tubos;Optimo
+MAT-104;Pegante PVC Soldadura Líquida 1/4 gal;Plomería;Unidad;28900;12;5;Bodega Principal - Estante P1;Optimo
+MAT-105;Vinilo Tipo 1 Blanco Cuñete;Pintura;Cuñete;185000;8;3;Bodega Principal - Zona Pinturas;Optimo
+MAT-106;Estuco Plástico Listo para Usar 25kg;Pintura;Bolsa;42000;20;8;Bodega Principal - Zona Pinturas;Optimo
+MAT-107;Cerradura de Sobreponer Derecha;Cerrajería;Unidad;68000;6;4;Bodega Principal - Estante C1;Optimo
+MAT-108;Chapa Tubular de Baño Cromo;Cerrajería;Unidad;34500;18;6;Bodega Principal - Estante C2;Optimo

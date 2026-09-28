@@ -100,6 +100,8 @@ interface DataContextType {
   // Auditoría directa
   logAudit: (action: AuditEntry["action"], module: string, entityId: string, entityName: string, details: string) => void;
   resetToInitialData: () => void;
+  importReportesBatch: (newItems: Omit<ReporteOrden, "idRegistro">[], replaceExisting?: boolean) => void;
+  clearReportes: () => void;
 }
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
@@ -724,6 +726,100 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     logAudit("CREAR", "Informes - Encuestas", newId, newEnc.cliente, `Calificación: ${newEnc.puntuacion}/5 estrellas`);
   };
 
+  // Importación masiva de reportes (permite reemplazar la BD con datos nuevos limpios o anexar)
+  const importReportesBatch = (newItems: Omit<ReporteOrden, "idRegistro">[], replaceExisting: boolean = false) => {
+    let startId = replaceExisting ? 1000 : Math.max(...reportes.map((r) => r.idRegistro), 1000);
+    const nowIso = new Date().toISOString();
+
+    const preparedReportes: ReporteOrden[] = newItems.map((item, idx) => {
+      const id = startId + idx + 1;
+      const enforcedAvance =
+        item.estado === "Ejecutado" || item.estado === "Cobrado"
+          ? 1.0
+          : item.tasaAvance !== undefined
+          ? item.tasaAvance
+          : 0.1;
+
+      return {
+        ...item,
+        idRegistro: id,
+        codigoAlfanumerico: item.codigoAlfanumerico || `#${id}`,
+        tipoTrabajo: item.tipoTrabajo || "Mantenimiento General",
+        tasaAvance: enforcedAvance,
+        ultimoActualizado: nowIso,
+        agendaActividades: item.agendaActividades || [],
+        anexosEtiquetas: item.anexosEtiquetas || [],
+        historial: item.historial || [
+          {
+            id: `HIST-IMPORT-${id}`,
+            fecha: nowIso,
+            autor: currentUser?.name || "Importador CSV",
+            autorCargo: currentUser?.cargo || currentRole || "Carga Masiva",
+            autorSelloDigital: `SOS-CSV-${Date.now().toString(36).toUpperCase()}`,
+            nuevoEstado: item.estado || "Cotizado",
+            nota: "Registro incorporado mediante importación masiva CSV.",
+            etiquetaAccion: "importacion",
+          },
+        ],
+      };
+    });
+
+    if (replaceExisting) {
+      setReportes(preparedReportes);
+      // Sincronizar cotizaciones para los reportes importados
+      const newCots: Cotizacion[] = preparedReportes
+        .filter((r) => r.totalCotizacion && r.totalCotizacion > 0)
+        .map((r, i) => ({
+          idCotizacion: 5001 + i,
+          idReporte: r.idRegistro,
+          reporteDireccion: r.direccion,
+          clienteNombre: r.clienteNombre,
+          contratistaId: r.idContratista || "CON-001",
+          contratistaNombre: r.contratistaNombre || "Cuadrilla SOS",
+          fecha: r.fecha || new Date().toISOString().slice(0, 10),
+          numTodoCosto: r.totalCotizacion,
+          numMaterial: Math.round(r.totalCotizacion * 0.4),
+          numManoObra: Math.round(r.totalCotizacion * 0.5),
+          numTransporte: Math.round(r.totalCotizacion * 0.1),
+          estado: r.estado === "Cobrado" || r.estado === "Ejecutado" ? "Aprobada" : "Borrador",
+          diasGarantia: 30,
+          observaciones: r.reporte,
+          items: [
+            {
+              id: `ITEM-CSV-${i + 1}`,
+              descripcion: r.reporte || r.tipoTrabajo || "Mantenimiento General",
+              cantidad: 1,
+              unidad: "GLB",
+              valorUnitario: r.totalCotizacion,
+              valorTotal: r.totalCotizacion,
+            },
+          ],
+        }));
+      setCotizaciones(newCots);
+      logAudit(
+        "CREAR",
+        "Base de Datos",
+        "NUEVA-BD-CSV",
+        "tblReportes",
+        `Inicializada nueva base de datos limpia con ${preparedReportes.length} registros desde CSV`
+      );
+    } else {
+      setReportes((prev) => [...preparedReportes, ...prev]);
+      logAudit(
+        "CREAR",
+        "tblReportes",
+        "ANEXAR-CSV",
+        "Importación",
+        `Anexados ${preparedReportes.length} nuevos reportes desde CSV`
+      );
+    }
+  };
+
+  const clearReportes = () => {
+    setReportes([]);
+    logAudit("ELIMINAR", "tblReportes", "CLEAN-ALL", "Base de Datos", "Vaciado de tabla de reportes para carga limpia");
+  };
+
   // Reset a datos semilla
   const resetToInitialData = () => {
     if (window.confirm("¿Seguro que deseas restablecer todos los datos a la configuración inicial de la BD?")) {
@@ -795,6 +891,8 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
         addEncuesta,
         logAudit,
         resetToInitialData,
+        importReportesBatch,
+        clearReportes,
       }}
     >
       {children}
