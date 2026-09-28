@@ -1,4 +1,4 @@
-﻿/**
+/**
  * supabaseAuth.ts — Cliente Soberano y Ligero de Supabase para SOSENLINEA (2026-2027)
  * 
  * Se comunica directamente con las APIs REST de Supabase Auth y PostgreSQL.
@@ -31,10 +31,10 @@ export interface SupabaseAuthResponse {
 
 export const supabaseAuth = {
   /**
-   * Iniciar sesión directamente con Supabase Auth (email + password)
+   * Iniciar sesion directamente con Supabase Auth (email + password)
    */
   async signIn(email: string, password: string): Promise<{ accessToken: string; refreshToken: string; user: SupabaseUser }> {
-    const res = await fetch(${SUPABASE_URL}/auth/v1/token?grant_type=password, {
+    const res = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
       method: 'POST',
       headers: {
         'apikey': SUPABASE_ANON_KEY,
@@ -45,7 +45,7 @@ export const supabaseAuth = {
 
     const data = await res.json();
     if (!res.ok) {
-      throw new Error(data.error_description || data.message || 'Error de autenticación en Supabase');
+      throw new Error(data.error_description || data.message || 'Error de autenticacion en Supabase');
     }
 
     const authData = data as SupabaseAuthResponse;
@@ -70,10 +70,10 @@ export const supabaseAuth = {
    */
   async getProfile(userId: string, accessToken: string): Promise<any | null> {
     try {
-      const res = await fetch(${SUPABASE_URL}/rest/v1/user_profiles?id=eq.&select=*, {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/user_profiles?id=eq.${userId}&select=*`, {
         headers: {
           'apikey': SUPABASE_ANON_KEY,
-          'Authorization': Bearer ,
+          'Authorization': `Bearer ${accessToken}`,
         },
       });
 
@@ -89,7 +89,7 @@ export const supabaseAuth = {
    * Registrar nuevo usuario con Supabase Auth
    */
   async signUp(email: string, password: string, fullName: string, role: string = 'usuario'): Promise<void> {
-    const res = await fetch(${SUPABASE_URL}/auth/v1/signup, {
+    const res = await fetch(`${SUPABASE_URL}/auth/v1/signup`, {
       method: 'POST',
       headers: {
         'apikey': SUPABASE_ANON_KEY,
@@ -112,15 +112,15 @@ export const supabaseAuth = {
   },
 
   /**
-   * Cerrar sesión en Supabase
+   * Cerrar sesion en Supabase
    */
   async signOut(accessToken: string): Promise<void> {
     try {
-      await fetch(${SUPABASE_URL}/auth/v1/logout, {
+      await fetch(`${SUPABASE_URL}/auth/v1/logout`, {
         method: 'POST',
         headers: {
           'apikey': SUPABASE_ANON_KEY,
-          'Authorization': Bearer ,
+          'Authorization': `Bearer ${accessToken}`,
         },
       });
     } catch {}
