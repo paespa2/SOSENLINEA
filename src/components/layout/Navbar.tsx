@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+﻿import React, { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { UserProfileModal } from "../common/UserProfileModal";
 import {
@@ -32,7 +32,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   onToggleCollapseSidebar,
   onToggleMobileMenu,
 }) => {
-  const { currentUser, currentRole, permissions } = useAuth();
+  const { currentUser, currentRole, permissions, effectiveRole, simulatedRole, setSimulatedRole } = useAuth();
   const [showModal, setShowModal] = useState(false);
 
   // Iniciales del nombre
@@ -41,6 +41,69 @@ export const Navbar: React.FC<NavbarProps> = ({
     : '?';
 
   return (
+    <>
+      {/* BARRA DEV PARA PAESPA: SIMULACION DE ROLES 2026-2027 */}
+      {currentUser?.role === "desarrollador" && (
+        <div style={{
+          background: "#0f172a",
+          color: "#f8fafc",
+          borderBottom: "1px solid #7c3aed",
+          padding: "0.35rem 1.25rem",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          fontSize: "0.75rem",
+          fontWeight: 500,
+          zIndex: 60,
+          boxShadow: "0 2px 8px rgba(0,0,0,0.25)"
+        }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
+            <span style={{ height: "8px", width: "8px", borderRadius: "50%", background: "#a855f7", display: "inline-block", boxShadow: "0 0 6px #a855f7" }} />
+            <strong style={{ color: "#c084fc", letterSpacing: "0.02em" }}>MODO AUDITORIA DEV (2026-2027)</strong>
+            <span style={{ color: "#475569" }}>|</span>
+            <span style={{ color: "#94a3b8" }}>Conectado: <strong style={{ color: "#34d399" }}>paespa</strong></span>
+          </div>
+
+          <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+            <span style={{ color: "#cbd5e1" }}>Visualizar como:</span>
+            <select
+              value={simulatedRole || "desarrollador"}
+              onChange={(e) => {
+                const val = e.target.value;
+                setSimulatedRole(val === "desarrollador" ? null : (val as any));
+              }}
+              style={{
+                background: "#1e293b",
+                border: "1px solid #475569",
+                color: "#fff",
+                borderRadius: "4px",
+                padding: "2px 8px",
+                fontSize: "0.75rem",
+                outline: "none",
+                cursor: "pointer"
+              }}
+            >
+              <option value="desarrollador">Desarrollador (Control Total)</option>
+              <option value="admin">Administrativo (Finanzas & Op)</option>
+              <option value="auxiliar">Auxiliar (Almacen & Materiales)</option>
+              <option value="usuario">Cliente (Aislamiento BOLA/IDOR)</option>
+              <option value="campo">Tecnico de Campo</option>
+            </select>
+
+            <span style={{
+              background: simulatedRole ? "#b45309" : "#6b21a8",
+              color: "#fff",
+              padding: "2px 8px",
+              borderRadius: "4px",
+              fontWeight: 700,
+              fontSize: "0.7rem",
+              textTransform: "uppercase"
+            }}>
+              Rol Activo: {effectiveRole}
+            </span>
+          </div>
+        </div>
+      )}
     <header
       className="no-print navbar-header"
       style={{
@@ -57,7 +120,7 @@ export const Navbar: React.FC<NavbarProps> = ({
     >
       {/* Brand & Database Status & Toggle Buttons */}
       <div style={{ display: "flex", alignItems: "center", gap: "0.85rem" }}>
-        {/* Botón hamburguesa móvil */}
+        {/* BotÃ³n hamburguesa mÃ³vil */}
         <button
           type="button"
           onClick={onToggleMobileMenu}
@@ -68,13 +131,13 @@ export const Navbar: React.FC<NavbarProps> = ({
             alignItems: "center",
             justifyContent: "center",
           }}
-          title="Menú de Navegación"
-          aria-label="Abrir menú"
+          title="MenÃº de NavegaciÃ³n"
+          aria-label="Abrir menÃº"
         >
           <Menu size={18} />
         </button>
 
-        {/* Botón colapsar / expandir sidebar para desktop */}
+        {/* BotÃ³n colapsar / expandir sidebar para desktop */}
         <button
           type="button"
           onClick={onToggleCollapseSidebar}
@@ -85,7 +148,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             alignItems: "center",
             justifyContent: "center",
           }}
-          title={isSidebarCollapsed ? "Expandir menú lateral" : "Contraer menú lateral"}
+          title={isSidebarCollapsed ? "Expandir menÃº lateral" : "Contraer menÃº lateral"}
           aria-label="Alternar barra lateral"
         >
           {isSidebarCollapsed ? <PanelLeftOpen size={18} /> : <PanelLeftClose size={18} />}
@@ -213,11 +276,11 @@ export const Navbar: React.FC<NavbarProps> = ({
           </div>
         </div>
 
-        {/* Botón Mi Perfil & Seguridad */}
+        {/* BotÃ³n Mi Perfil & Seguridad */}
         <button
           onClick={() => setShowModal(true)}
           className="btn btn-secondary btn-sm"
-          title="Ver y editar mi perfil, cargo o contraseña"
+          title="Ver y editar mi perfil, cargo o contraseÃ±a"
           style={{ display: "flex", alignItems: "center", gap: "0.35rem", fontSize: "0.75rem", padding: "0.35rem 0.65rem" }}
         >
           <KeyRound size={13} color="#0891b2" />
@@ -229,7 +292,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           <button
             onClick={onLogout}
             className="btn"
-            title="Cerrar sesión"
+            title="Cerrar sesiÃ³n"
             style={{
               display: "flex", alignItems: "center", gap: "0.4rem",
               padding: "0.4rem 0.85rem", fontSize: "0.8rem",
@@ -243,8 +306,10 @@ export const Navbar: React.FC<NavbarProps> = ({
         )}
       </div>
 
-      {/* ── Modal Completo de Gestión de Perfil de Usuario ── */}
+      {/* â”€â”€ Modal Completo de GestiÃ³n de Perfil de Usuario â”€â”€ */}
       <UserProfileModal isOpen={showModal} onClose={() => setShowModal(false)} />
     </header>
+    </>
   );
 };
+
