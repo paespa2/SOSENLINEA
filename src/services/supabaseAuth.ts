@@ -114,6 +114,26 @@ export const supabaseAuth = {
   /**
    * Cerrar sesion en Supabase
    */
+  /**
+   * Actualizar usuario en Supabase Auth (ej. cambio de contrasea)
+   */
+  async updateUser(accessToken: string, attributes: { password?: string; data?: Record<string, any> }): Promise<any> {
+    const res = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
+      method: 'PUT',
+      headers: {
+        'apikey': SUPABASE_ANON_KEY,
+        'Authorization': `Bearer ${accessToken}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(attributes),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.msg || err.error_description || 'Error al actualizar usuario en Supabase');
+    }
+    return await res.json();
+  },
+
   async signOut(accessToken: string): Promise<void> {
     try {
       await fetch(`${SUPABASE_URL}/auth/v1/logout`, {

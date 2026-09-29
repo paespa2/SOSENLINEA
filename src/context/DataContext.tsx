@@ -155,11 +155,12 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     async function syncSupabase() {
       try {
-        const [supaClientes, supaMateriales, supaContratistas, supaSectores] = await Promise.all([
+        const [supaClientes, supaMateriales, supaContratistas, supaSectores, supaReportes] = await Promise.all([
           supabaseDb.getTable<any>('clientes'),
           supabaseDb.getTable<any>('materiales'),
           supabaseDb.getTable<any>('contratistas'),
           supabaseDb.getTable<any>('sectores'),
+          supabaseDb.getTable<any>('reportes'),
         ]);
 
         if (supaClientes && supaClientes.length > 0) {
@@ -227,6 +228,49 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
             responsable: "Coordinador de Zona",
             activo: s.activo !== false,
           })));
+        }
+
+        if (supaReportes && supaReportes.length > 0) {
+          const mappedReportes: ReporteOrden[] = supaReportes.map((sr: any) => {
+            let obsData: any = {};
+            try {
+              if (sr.observaciones && typeof sr.observaciones === 'string' && sr.observaciones.startsWith('{')) {
+                obsData = JSON.parse(sr.observaciones);
+              }
+            } catch {}
+
+            return {
+              idRegistro: Number(sr.id) || 1000,
+              codigoAlfanumerico: sr.numero_orden || `ORD-2026-${sr.id}`,
+              tipoTrabajo: sr.descripcion_servicio?.split('|')?.[0]?.replace('[', '')?.trim() || "Mantenimiento General",
+              idContratante: String(sr.cliente_id || 'CLI-01'),
+              clienteNombre: "Inversiones Santa María",
+              arrendatario: obsData.solicitante_nombre || "Cliente Solicitante",
+              propietario: "Inversiones Santa María",
+              direccion: sr.direccion || "Medellín",
+              sector: sr.sector || "El Poblado",
+              fecha: sr.fecha || new Date().toISOString().slice(0, 10),
+              idContratista: String(sr.contratista_id || ''),
+              contratistaNombre: "Sin Asignar",
+              estado: (sr.estado || "Se Recibe Información") as ReporteEstado,
+              reporte: sr.descripcion_servicio || "Solicitud de servicio",
+              totalCotizacion: Number(sr.total) || 0,
+              tasaAvance: sr.estado === "Ejecutado" ? 1.0 : 0.05,
+              solicitanteNombre: obsData.solicitante_nombre,
+              solicitanteTelefono: obsData.solicitante_telefono || "3001234567",
+              solicitanteEmail: obsData.solicitante_email,
+              solicitanteCanal: obsData.canal_contacto || "WhatsApp",
+              urgencia: (sr.prioridad === "Alta" ? "Emergencia" : sr.prioridad === "Media" ? "Urgente" : "Normal") as any,
+              origenSolicitud: "Cliente Web",
+              estadoContacto: "Pendiente de Contacto",
+            };
+          });
+
+          setReportes((prev) => {
+            const existingIds = new Set(prev.map((p) => p.idRegistro));
+            const newOnes = mappedReportes.filter((m) => !existingIds.has(m.idRegistro));
+            return [...newOnes, ...prev];
+          });
         }
       } catch (e) {
         console.info('Supabase data sync fallback active');

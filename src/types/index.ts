@@ -9,6 +9,7 @@ export interface User {
   cargo?: string;
   telefono?: string;
   selloDigital?: string;
+  username?: string;
 }
 
 export type ModuleCategory = "principal" | "contable" | "maestros" | "informes" | "operaciones" | "auditoria";
