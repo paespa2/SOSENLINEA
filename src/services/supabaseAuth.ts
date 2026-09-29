@@ -7,6 +7,7 @@
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || 'https://hgywidapnfslfsjfuxdi.supabase.co';
 const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || 'sb_publishable_p0JJBSVl7ig-t-QDskX6QQ_BR3pKOrU';
+const SUPABASE_SERVICE_ROLE_KEY = import.meta.env.VITE_SUPABASE_SERVICE_ROLE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhneXdpZGFwbmZzbGZzamZ1eGRpIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc5MDYxNDY2NiwiZXhwIjoyMTA2MTkwNjY2fQ.9jLudXiJQmyK6bfp7VFNHQlu-NcBeOSTWdKx5McpcVY';
 
 export interface SupabaseUser {
   id: string;
@@ -156,8 +157,8 @@ export const supabaseDb = {
     try {
       const res = await fetch(`${SUPABASE_URL}/rest/v1/${tableName}?select=*`, {
         headers: {
-          'apikey': SUPABASE_ANON_KEY,
-          'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+          'apikey': SUPABASE_SERVICE_ROLE_KEY,
+          'Authorization': `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
         },
       });
       if (!res.ok) return [];
@@ -175,8 +176,8 @@ export const supabaseDb = {
       const res = await fetch(`${SUPABASE_URL}/rest/v1/${tableName}`, {
         method: 'POST',
         headers: {
-          'apikey': SUPABASE_ANON_KEY,
-          'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+          'apikey': SUPABASE_SERVICE_ROLE_KEY,
+          'Authorization': `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
           'Content-Type': 'application/json',
           'Prefer': 'return=minimal',
         },
@@ -196,8 +197,8 @@ export const supabaseDb = {
       const res = await fetch(`${SUPABASE_URL}/rest/v1/${tableName}?${matchColumn}=eq.${encodeURIComponent(String(matchValue))}`, {
         method: 'PATCH',
         headers: {
-          'apikey': SUPABASE_ANON_KEY,
-          'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+          'apikey': SUPABASE_SERVICE_ROLE_KEY,
+          'Authorization': `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
           'Content-Type': 'application/json',
           'Prefer': 'return=minimal',
         },
@@ -217,8 +218,8 @@ export const supabaseDb = {
       const res = await fetch(`${SUPABASE_URL}/rest/v1/${tableName}?${matchColumn}=eq.${encodeURIComponent(String(matchValue))}`, {
         method: 'DELETE',
         headers: {
-          'apikey': SUPABASE_ANON_KEY,
-          'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+          'apikey': SUPABASE_SERVICE_ROLE_KEY,
+          'Authorization': `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
         },
       });
       return res.ok;

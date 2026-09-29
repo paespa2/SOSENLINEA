@@ -339,6 +339,25 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
     setContractors((prev) => [newCont, ...prev]);
     logAudit("CREAR", "Maestros - Contratistas", newId, newCont.nombre, `Registrado ${newCont.tipo} NIT ${newCont.nit}-${newCont.dv}`);
+
+    // Persistencia directa en Supabase Cloud
+    supabaseDb.insertRow('contratistas', {
+      nombre: data.nombre,
+      tipo: data.tipo,
+      nit: data.nit,
+      dv: data.dv || "0",
+      email: data.email || "",
+      telefono: data.telefono || "",
+      direccion: data.direccion || "",
+      ciudad: data.ciudad || "Medellín",
+      sector: data.sector || "El Poblado",
+      especialidad: data.especialidad || "General",
+      banco: data.banco || "Bancolombia",
+      tipo_cta: data.tipoCta || "Ahorros",
+      numero_cta: data.numeroCta || "",
+      has_arl: true,
+      activo: data.activo !== false,
+    }).catch(() => {});
   };
 
   const updateContractor = (id: string, data: Partial<Contractor>) => {
@@ -544,6 +563,19 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
       return prev;
     });
+
+    // Persistencia asíncrona hacia Supabase Cloud
+    supabaseDb.updateRow('reportes', 'id', idRegistro, {
+      ...(data.estado ? { estado: toSupaEstado(data.estado) } : {}),
+      ...(data.totalCotizacion !== undefined ? { total: data.totalCotizacion } : {}),
+      ...(data.direccion ? { direccion: data.direccion } : {}),
+      ...(data.reporte ? { descripcion_servicio: data.reporte } : {}),
+      observaciones: JSON.stringify({
+        estado_ui: data.estado,
+        tasaAvance: data.tasaAvance,
+        ultimoActualizado: new Date().toISOString(),
+      }),
+    }).catch(() => {});
   };
 
   const deleteReporte = (idRegistro: number, otpCode?: string, backupCreated?: boolean) => {
@@ -835,6 +867,18 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const newMat: Material = { ...data, id: newId };
     setMateriales((prev) => [newMat, ...prev]);
     logAudit("CREAR", "Maestros - Materiales", newId, newMat.nombre, `Stock inicial: ${newMat.stockActual} ${newMat.unidad}`);
+
+    // Persistencia directa en Supabase Cloud
+    supabaseDb.insertRow('materiales', {
+      codigo: data.codigo,
+      descripcion: data.nombre,
+      unidad: data.unidad,
+      precio_unitario: data.precioUnitario,
+      stock_actual: data.stockActual,
+      stock_minimo: data.stockMinimo,
+      categoria: data.categoria || "General",
+      activo: true,
+    }).catch(() => {});
   };
 
   const updateMaterialStock = (id: string, nuevoStock: number) => {
@@ -856,6 +900,20 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const newClient: Client = { ...data, id: newId };
     setClientes((prev) => [newClient, ...prev]);
     logAudit("CREAR", "Maestros - Clientes", newId, newClient.nombre, `Nuevo ${newClient.tipo}`);
+
+    // Persistencia directa en Supabase Cloud
+    supabaseDb.insertRow('clientes', {
+      nit: data.documento || "900.000.000",
+      dv: "0",
+      nombre: data.nombre,
+      email: data.email || "contacto@cliente.com",
+      telefono: data.telefono || "300 000 0000",
+      direccion: data.inmuebleReferencia || "Medellín",
+      ciudad: "Medellín",
+      sector: "El Poblado",
+      contacto_nombre: data.nombre,
+      activo: data.estado !== "Inactivo",
+    }).catch(() => {});
   };
 
   const updateClient = (id: string, data: Partial<Client>) => {
@@ -877,6 +935,14 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const newSec: Sector = { ...data, id: newId };
     setSectores((prev) => [newSec, ...prev]);
     logAudit("CREAR", "Maestros - Sectores", newId, newSec.nombre, `Zona: ${newSec.zona}`);
+
+    // Persistencia directa en Supabase Cloud
+    supabaseDb.insertRow('sectores', {
+      nombre: data.nombre,
+      zona: data.zona,
+      ciudad: "Medellín",
+      activo: data.activo !== false,
+    }).catch(() => {});
   };
 
   // Herramientas
