@@ -17,6 +17,7 @@ import { exportToCSV, triggerPrint } from "../../../utils/exportUtils";
 import { Modal } from "../../common/Modal";
 import { StatusBadge } from "../../common/Badge";
 import { CSVImportModal } from "../../common/CSVImportModal";
+import { SolicitudServicioClienteModal } from "./SolicitudServicioClienteModal";
 import {
   FileSpreadsheet,
   Plus,
@@ -62,6 +63,7 @@ import {
   ExternalLink,
   Activity,
   CheckCheck,
+  Eye,
   Bus,
   Phone,
 } from "lucide-react";
@@ -203,12 +205,23 @@ export const ReportesView: React.FC = () => {
     addClient,
     addContractor,
   } = useData();
-  const { can, currentUser, currentRole } = useAuth();
+  const { can, currentUser, currentRole, effectiveRole } = useAuth();
 
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedEstado, setSelectedEstado] = useState<string>("todos");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isCSVModalOpen, setIsCSVModalOpen] = useState(false);
+  const [isClienteModalOpen, setIsClienteModalOpen] = useState(false);
+
+  // Solicitudes de clientes pendientes de atención y contacto por Admin / Auxiliar
+  const pendingClientRequests = useMemo(() => {
+    return reportes.filter(
+      (r) =>
+        r.estado === "Se Recibe Información" ||
+        r.origenSolicitud === "Cliente Web" ||
+        (r.solicitanteTelefono && r.estadoContacto === "Pendiente de Contacto")
+    );
+  }, [reportes]);
   const [editingItem, setEditingItem] = useState<ReporteOrden | null>(null);
   const [formError, setFormError] = useState<string | null>(null);
   const [feedbackSuccess, setFeedbackSuccess] = useState<string | null>(null);
@@ -1589,14 +1602,324 @@ export const ReportesView: React.FC = () => {
             </button>
           )}
 
-          {can("create") && (
-            <button onClick={handleOpenCreate} className="btn btn-primary btn-sm">
-              <Plus size={15} />
-              Nuevo Reporte
+          {effectiveRole === "usuario" ? (
+            <button
+              type="button"
+              onClick={() => setIsClienteModalOpen(true)}
+              className="btn btn-primary btn-sm"
+              style={{
+                background: "linear-gradient(135deg, #2563eb, #1d4ed8)",
+                display: "flex",
+                alignItems: "center",
+                gap: "0.45rem",
+                fontWeight: 700,
+                boxShadow: "0 4px 14px rgba(37,99,235,0.35)",
+              }}
+            >
+              <Sparkles size={16} />
+              Solicitar Nuevo Servicio
             </button>
+          ) : (
+            <>
+              <button
+                type="button"
+                onClick={() => setIsClienteModalOpen(true)}
+                className="btn btn-secondary btn-sm"
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "0.4rem",
+                  color: "var(--primary)",
+                  borderColor: "rgba(37, 99, 235, 0.4)",
+                  fontWeight: 600,
+                }}
+                title="Radicar solicitud rápida de cliente (vía telefónica o WhatsApp)"
+              >
+                <Sparkles size={15} />
+                Radicar Solicitud Cliente
+              </button>
+
+              {can("create") && (
+                <button onClick={handleOpenCreate} className="btn btn-primary btn-sm">
+                  <Plus size={15} />
+                  Nuevo Reporte
+                </button>
+              )}
+            </>
           )}
         </div>
       </div>
+
+      {/* Banner de Bienvenida y Acción para el Cliente (Rol Usuario) */}
+      {effectiveRole === "usuario" && (
+        <div
+          className="card no-print"
+          style={{
+            padding: "1.35rem 1.6rem",
+            background: "linear-gradient(135deg, rgba(37, 99, 235, 0.08) 0%, rgba(59, 130, 246, 0.04) 100%)",
+            border: "1px solid rgba(37, 99, 246, 0.25)",
+            borderRadius: "14px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            flexWrap: "wrap",
+            gap: "1.25rem",
+            boxShadow: "0 4px 15px rgba(37, 99, 235, 0.06)",
+          }}
+        >
+          <div style={{ maxWidth: "660px" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.3rem" }}>
+              <span style={{ fontSize: "1.2rem" }}>👋</span>
+              <h3 style={{ fontSize: "1.15rem", fontWeight: 800, color: "var(--text-main)", margin: 0 }}>
+                Portal de Servicios & Atención al Cliente
+              </h3>
+              <span
+                style={{
+                  fontSize: "0.7rem",
+                  fontWeight: 700,
+                  background: "rgba(37, 99, 235, 0.12)",
+                  color: "var(--primary)",
+                  padding: "0.15rem 0.5rem",
+                  borderRadius: "20px",
+                }}
+              >
+                {currentUser?.name || "Cliente Corporativo"}
+              </span>
+            </div>
+            <p style={{ fontSize: "0.85rem", color: "var(--text-muted)", margin: 0, lineHeight: 1.5 }}>
+              ¿Tienes una novedad locativa, requieres un mantenimiento o necesitas una visita técnica en tu inmueble? Radica tu solicitud dejando tus datos de contacto y un <strong>Administrador</strong> o <strong>Auxiliar</strong> coordinará la atención técnica de inmediato.
+            </p>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => setIsClienteModalOpen(true)}
+            className="btn btn-primary"
+            style={{
+              background: "linear-gradient(135deg, #2563eb, #1d4ed8)",
+              color: "#ffffff",
+              fontWeight: 800,
+              fontSize: "0.95rem",
+              padding: "0.75rem 1.5rem",
+              display: "flex",
+              alignItems: "center",
+              gap: "0.6rem",
+              boxShadow: "0 6px 20px rgba(37, 99, 235, 0.4)",
+              border: "none",
+              borderRadius: "10px",
+              cursor: "pointer",
+            }}
+          >
+            <Sparkles size={20} />
+            <span>+ Iniciar Solicitud de Servicio / PQR</span>
+          </button>
+        </div>
+      )}
+
+      {/* Bandeja de Notificaciones y Contacto para Administrador / Auxiliar */}
+      {effectiveRole !== "usuario" && pendingClientRequests.length > 0 && (
+        <div
+          className="card no-print"
+          style={{
+            padding: "1.25rem 1.5rem",
+            background: "linear-gradient(135deg, rgba(245, 158, 11, 0.08) 0%, rgba(251, 191, 36, 0.03) 100%)",
+            border: "1px solid rgba(245, 158, 11, 0.35)",
+            borderRadius: "14px",
+            display: "flex",
+            flexDirection: "column",
+            gap: "1rem",
+          }}
+        >
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "0.5rem" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
+              <div
+                style={{
+                  width: "36px",
+                  height: "36px",
+                  borderRadius: "8px",
+                  background: "rgba(245, 158, 11, 0.2)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  color: "#d97706",
+                }}
+              >
+                <MessageSquare size={19} />
+              </div>
+              <div>
+                <h3 style={{ fontSize: "1.05rem", fontWeight: 800, color: "var(--text-main)", margin: 0, display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                  <span>📥 Solicitudes y PQR de Clientes Pendientes de Contacto</span>
+                  <span
+                    style={{
+                      fontSize: "0.72rem",
+                      fontWeight: 800,
+                      background: "#f59e0b",
+                      color: "#ffffff",
+                      padding: "0.15rem 0.55rem",
+                      borderRadius: "20px",
+                    }}
+                  >
+                    {pendingClientRequests.length} pendientes
+                  </span>
+                </h3>
+                <p style={{ fontSize: "0.8rem", color: "var(--text-muted)", margin: "0.15rem 0 0 0" }}>
+                  Clientes que radicaron requerimientos desde el portal web dejando sus datos de contacto. Responde por WhatsApp o llamada para coordinar la visita.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Tarjetas de Solicitudes Pendientes */}
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: "0.85rem" }}>
+            {pendingClientRequests.slice(0, 4).map((req) => {
+              const cleanPhone = (req.solicitanteTelefono || req.referenciaContacto || "").replace(/\D/g, "");
+              const contactName = req.solicitanteNombre || req.arrendatario || req.clienteNombre;
+              const msgWhatsApp = `Hola ${contactName}, te saludamos cordialmente de SOS EN LÍNEA. Recibimos tu solicitud de servicio con radicado #${req.idRegistro} (${req.codigoAlfanumerico || "ORD" + req.idRegistro}) para el inmueble: ${req.direccion}. Estamos listos para coordinar tu atención técnica. ¿Podrías confirmarnos si tienes disponibilidad para la visita?`;
+
+              return (
+                <div
+                  key={req.idRegistro}
+                  style={{
+                    background: "var(--surface, #ffffff)",
+                    border: "1px solid rgba(245, 158, 11, 0.3)",
+                    borderRadius: "10px",
+                    padding: "1rem",
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "space-between",
+                    gap: "0.75rem",
+                    boxShadow: "0 2px 6px rgba(0,0,0,0.04)",
+                  }}
+                >
+                  <div>
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "0.4rem" }}>
+                      <span style={{ fontSize: "0.78rem", fontWeight: 800, color: "var(--primary)", fontFamily: "var(--font-mono)" }}>
+                        #{req.idRegistro} • {req.codigoAlfanumerico || `REQ-${req.idRegistro}`}
+                      </span>
+                      <span
+                        style={{
+                          fontSize: "0.68rem",
+                          fontWeight: 700,
+                          padding: "0.15rem 0.45rem",
+                          borderRadius: "4px",
+                          background:
+                            req.urgencia === "Emergencia"
+                              ? "rgba(239, 68, 68, 0.15)"
+                              : req.urgencia === "Urgente"
+                              ? "rgba(245, 158, 11, 0.15)"
+                              : "rgba(16, 185, 129, 0.15)",
+                          color:
+                            req.urgencia === "Emergencia"
+                              ? "#dc2626"
+                              : req.urgencia === "Urgente"
+                              ? "#d97706"
+                              : "#059669",
+                        }}
+                      >
+                        {req.urgencia || "Normal"}
+                      </span>
+                    </div>
+
+                    <div style={{ fontWeight: 700, fontSize: "0.88rem", color: "var(--text-main)", marginBottom: "0.2rem" }}>
+                      👤 {contactName}
+                    </div>
+
+                    <div style={{ fontSize: "0.8rem", color: "#16a34a", fontWeight: 600, display: "flex", alignItems: "center", gap: "0.35rem", marginBottom: "0.35rem" }}>
+                      <Phone size={13} />
+                      <span>{req.solicitanteTelefono || req.referenciaContacto || "Sin teléfono registrado"}</span>
+                    </div>
+
+                    <div style={{ fontSize: "0.78rem", color: "var(--text-muted)", display: "flex", alignItems: "center", gap: "0.35rem", marginBottom: "0.4rem" }}>
+                      <MapPin size={13} />
+                      <span>{req.direccion} ({req.sector})</span>
+                    </div>
+
+                    <div
+                      style={{
+                        fontSize: "0.78rem",
+                        color: "var(--text-main)",
+                        background: "var(--background, #f8fafc)",
+                        padding: "0.5rem 0.65rem",
+                        borderRadius: "6px",
+                        border: "1px solid rgba(226, 232, 240, 0.8)",
+                        lineHeight: 1.4,
+                        fontStyle: "italic",
+                      }}
+                    >
+                      &ldquo;{req.reporte}&rdquo;
+                    </div>
+                  </div>
+
+                  {/* Botones de Comunicación Inmediata */}
+                  <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", flexWrap: "wrap", borderTop: "1px solid rgba(226, 232, 240, 0.8)", paddingTop: "0.65rem" }}>
+                    {cleanPhone && (
+                      <a
+                        href={`https://wa.me/57${cleanPhone}?text=${encodeURIComponent(msgWhatsApp)}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="btn btn-sm"
+                        style={{
+                          background: "#25D366",
+                          color: "#ffffff",
+                          border: "none",
+                          fontWeight: 700,
+                          fontSize: "0.75rem",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "0.35rem",
+                          padding: "0.35rem 0.65rem",
+                          borderRadius: "6px",
+                          textDecoration: "none",
+                        }}
+                        title="Abrir chat directo de WhatsApp con el cliente"
+                      >
+                        <MessageSquare size={13} />
+                        <span>WhatsApp</span>
+                      </a>
+                    )}
+
+                    {cleanPhone && (
+                      <a
+                        href={`tel:${cleanPhone}`}
+                        className="btn btn-secondary btn-sm"
+                        style={{
+                          fontSize: "0.75rem",
+                          padding: "0.35rem 0.55rem",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "0.3rem",
+                        }}
+                        title="Llamar al cliente"
+                      >
+                        <Phone size={13} />
+                        <span>Llamar</span>
+                      </a>
+                    )}
+
+                    <button
+                      type="button"
+                      onClick={() => handleOpenEdit(req, "reporte")}
+                      className="btn btn-primary btn-sm"
+                      style={{
+                        fontSize: "0.75rem",
+                        padding: "0.35rem 0.65rem",
+                        marginLeft: "auto",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "0.3rem",
+                      }}
+                      title="Asignar Contratista, Cuadrilla y Cotizar"
+                    >
+                      <Wrench size={13} />
+                      <span>Asignar Orden</span>
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       {/* Buscador y Filtros con TODOS los nuevos estados */}
       <div
@@ -1788,51 +2111,85 @@ export const ReportesView: React.FC = () => {
                   </td>
                   <td className="table-actions-sticky" style={{ textAlign: "right", minWidth: "140px" }}>
                     <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: "0.35rem" }}>
-                      {can("edit") && (
-                        <>
-                          <button
-                            onClick={() => handleOpenEdit(r, "proceso")}
-                            className="btn btn-secondary btn-sm"
-                            title="Proceso, Seguimiento & WhatsApp"
-                            style={{ padding: "0.3rem 0.45rem", color: "#0891b2" }}
-                          >
-                            <History size={13} />
-                          </button>
-                          <button
-                            onClick={() => handleOpenEdit(r, "reporte")}
-                            className="btn btn-secondary btn-sm"
-                            title="Editar Reporte (Parte 1)"
-                            style={{ padding: "0.3rem 0.45rem" }}
-                          >
-                            <Edit2 size={13} />
-                          </button>
-                          <button
-                            onClick={() => handleOpenEdit(r, "cotizacion")}
-                            className="btn btn-secondary btn-sm"
-                            title="Cotizaciones del Caso (Parte 2)"
-                            style={{ padding: "0.3rem 0.45rem", color: "var(--primary)" }}
-                          >
-                            <Calculator size={13} />
-                          </button>
-                          <button
-                            onClick={() => handleOpenEdit(r, "firma")}
-                            className="btn btn-secondary btn-sm"
-                            title="PDF & Firma Electrónica (Parte 3)"
-                            style={{ padding: "0.3rem 0.45rem", color: "#16a34a" }}
-                          >
-                            <PenTool size={13} />
-                          </button>
-                        </>
-                      )}
-                      {can("delete") && (
+                      {effectiveRole === "usuario" ? (
                         <button
-                          onClick={() => handleDelete(r.idRegistro, r.direccion)}
-                          className="btn btn-danger btn-sm"
-                          title="Eliminar Orden"
-                          style={{ padding: "0.3rem 0.45rem" }}
+                          type="button"
+                          onClick={() => handleOpenEdit(r, "proceso")}
+                          className="btn btn-primary btn-sm"
+                          title="Ver Detalle y Seguimiento de mi Solicitud"
+                          style={{
+                            padding: "0.35rem 0.65rem",
+                            fontSize: "0.75rem",
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "0.35rem",
+                            fontWeight: 700,
+                          }}
                         >
-                          <Trash2 size={13} />
+                          <Eye size={13} />
+                          <span>Ver Avance</span>
                         </button>
+                      ) : (
+                        <>
+                          {(r.solicitanteTelefono || r.referenciaContacto) && (
+                            <a
+                              href={`https://wa.me/57${(r.solicitanteTelefono || r.referenciaContacto || "").replace(/\D/g, "")}?text=${encodeURIComponent(`Hola ${r.solicitanteNombre || r.arrendatario || "estimado cliente"}, te saludamos de SOS EN LINEA respecto a tu orden #${r.idRegistro} (${r.direccion}).`)}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="btn btn-secondary btn-sm"
+                              title="Escribir por WhatsApp al Cliente"
+                              style={{ padding: "0.3rem 0.45rem", color: "#25D366", borderColor: "rgba(37, 211, 102, 0.4)" }}
+                            >
+                              <MessageSquare size={13} />
+                            </a>
+                          )}
+                          {can("edit") && (
+                            <>
+                              <button
+                                onClick={() => handleOpenEdit(r, "proceso")}
+                                className="btn btn-secondary btn-sm"
+                                title="Proceso, Seguimiento & WhatsApp"
+                                style={{ padding: "0.3rem 0.45rem", color: "#0891b2" }}
+                              >
+                                <History size={13} />
+                              </button>
+                              <button
+                                onClick={() => handleOpenEdit(r, "reporte")}
+                                className="btn btn-secondary btn-sm"
+                                title="Editar Reporte (Parte 1)"
+                                style={{ padding: "0.3rem 0.45rem" }}
+                              >
+                                <Edit2 size={13} />
+                              </button>
+                              <button
+                                onClick={() => handleOpenEdit(r, "cotizacion")}
+                                className="btn btn-secondary btn-sm"
+                                title="Cotizaciones del Caso (Parte 2)"
+                                style={{ padding: "0.3rem 0.45rem", color: "var(--primary)" }}
+                              >
+                                <Calculator size={13} />
+                              </button>
+                              <button
+                                onClick={() => handleOpenEdit(r, "firma")}
+                                className="btn btn-secondary btn-sm"
+                                title="PDF & Firma Electrónica (Parte 3)"
+                                style={{ padding: "0.3rem 0.45rem", color: "#16a34a" }}
+                              >
+                                <PenTool size={13} />
+                              </button>
+                            </>
+                          )}
+                          {can("delete") && (
+                            <button
+                              onClick={() => handleDelete(r.idRegistro, r.direccion)}
+                              className="btn btn-danger btn-sm"
+                              title="Eliminar Orden"
+                              style={{ padding: "0.3rem 0.45rem" }}
+                            >
+                              <Trash2 size={13} />
+                            </button>
+                          )}
+                        </>
                       )}
                     </div>
                   </td>
@@ -5216,6 +5573,12 @@ export const ReportesView: React.FC = () => {
         isOpen={isCSVModalOpen}
         onClose={() => setIsCSVModalOpen(false)}
         defaultEntity="reportes"
+      />
+
+      {/* Modal de Solicitud de Servicio / PQR para Clientes */}
+      <SolicitudServicioClienteModal
+        isOpen={isClienteModalOpen}
+        onClose={() => setIsClienteModalOpen(false)}
       />
     </div>
   );

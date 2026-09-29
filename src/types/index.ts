@@ -198,6 +198,17 @@ export interface ReporteOrden {
   historial?: HistorialEntrada[];
   agendaActividades?: ActividadAgenda[];
   anexosEtiquetas?: AnexoEtiqueta[];
+  
+  // Solicitud de Servicio / PQR del Cliente
+  solicitanteNombre?: string;
+  solicitanteTelefono?: string;
+  solicitanteEmail?: string;
+  solicitanteCanal?: 'WhatsApp' | 'Llamada' | 'Correo';
+  urgencia?: 'Normal' | 'Urgente' | 'Emergencia';
+  inmuebleDetalle?: string;
+  origenSolicitud?: 'Cliente Web' | 'Operador Interno' | 'Llamada PQR';
+  horarioPreferido?: string;
+  estadoContacto?: 'Pendiente de Contacto' | 'Contactado por WhatsApp' | 'Contactado por Llamada' | 'Asignado a Cuadrilla';
 }
 
 /** Mapeado desde tblCotizacion + tblDesCotizacion (Azure SQL) */

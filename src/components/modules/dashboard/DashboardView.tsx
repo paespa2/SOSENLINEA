@@ -40,7 +40,7 @@ interface DashboardViewProps {
 
 export const DashboardView: React.FC<DashboardViewProps> = ({ onNavigate }) => {
   const { reportes, novedades, llaves, auditLogs, cotizaciones } = useData();
-  const { currentUser, currentRole } = useAuth();
+  const { currentUser, currentRole, effectiveRole } = useAuth();
 
   // Estados de control
   const [lastSyncTime, setLastSyncTime] = useState<Date>(new Date());
@@ -147,6 +147,15 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onNavigate }) => {
     return Object.entries(counts)
       .sort((a, b) => b[1] - a[1])
       .slice(0, 5);
+  }, [reportes]);
+
+  const pendingClientRequests = useMemo(() => {
+    return reportes.filter(
+      (r) =>
+        r.estado === "Se Recibe Información" ||
+        r.origenSolicitud === "Cliente Web" ||
+        (r.solicitanteTelefono && r.estadoContacto === "Pendiente de Contacto")
+    );
   }, [reportes]);
 
   const llavesPrestadas = useMemo(
@@ -285,9 +294,53 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onNavigate }) => {
 
           {/* Botones de Acción Inmediata */}
           <div style={{ display: "flex", gap: "0.6rem", flexWrap: "wrap" }}>
-            <button
-              type="button"
-              onClick={() => setIsCSVModalOpen(true)}
+            {effectiveRole === "usuario" ? (
+              <button
+                type="button"
+                onClick={() => onNavigate("reportes-ordenes")}
+                className="btn btn-primary"
+                style={{
+                  background: "linear-gradient(135deg, #2563eb, #3b82f6)",
+                  color: "#ffffff",
+                  fontWeight: 700,
+                  fontSize: "0.85rem",
+                  padding: "0.55rem 1.15rem",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "0.45rem",
+                  boxShadow: "0 4px 14px rgba(37, 99, 235, 0.4)",
+                  border: "none",
+                  borderRadius: "8px",
+                  cursor: "pointer",
+                }}
+              >
+                <Sparkles size={16} />
+                <span>+ Iniciar Solicitud de Servicio / PQR</span>
+              </button>
+            ) : (
+              <>
+                {pendingClientRequests.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => onNavigate("reportes-ordenes")}
+                    className="btn btn-warning btn-sm"
+                    style={{
+                      background: "rgba(245, 158, 11, 0.2)",
+                      color: "#fbbf24",
+                      borderColor: "rgba(245, 158, 11, 0.4)",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "0.4rem",
+                      fontWeight: 700,
+                    }}
+                    title="Ver solicitudes de clientes pendientes de contacto"
+                  >
+                    <span>🔔 {pendingClientRequests.length} Solicitudes Pendientes</span>
+                  </button>
+                )}
+                <button
+                  type="button"
+                  onClick={() => setIsCSVModalOpen(true)}
               className="btn btn-secondary btn-sm"
               style={{
                 background: "rgba(255, 255, 255, 0.12)",
@@ -321,6 +374,8 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onNavigate }) => {
               <Plus size={14} />
               Gestionar Órdenes
             </button>
+            </>
+            )}
           </div>
         </div>
       </div>
