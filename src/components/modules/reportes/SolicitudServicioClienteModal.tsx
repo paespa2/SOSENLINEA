@@ -171,7 +171,7 @@ export const SolicitudServicioClienteModal: React.FC<SolicitudServicioClienteMod
           sector,
           direccion: direccionCompleta,
           descripcion_servicio: `[${tipoTrabajo} | ${urgencia}] ${reporte.trim()}`,
-          estado: 'Se Recibe Información',
+          estado: 'En Progreso', // Enum válido en Supabase PostgreSQL
           prioridad: urgencia === 'Emergencia' ? 'Alta' : urgencia === 'Urgente' ? 'Media' : 'Baja',
           total: 0,
           observaciones: JSON.stringify({

@@ -189,6 +189,45 @@ export const supabaseDb = {
   },
 
   /**
+   * Actualiza un registro en Supabase
+   */
+  async updateRow(tableName: string, matchColumn: string, matchValue: any, data: any): Promise<boolean> {
+    try {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/${tableName}?${matchColumn}=eq.${encodeURIComponent(String(matchValue))}`, {
+        method: 'PATCH',
+        headers: {
+          'apikey': SUPABASE_ANON_KEY,
+          'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+          'Content-Type': 'application/json',
+          'Prefer': 'return=minimal',
+        },
+        body: JSON.stringify(data),
+      });
+      return res.ok;
+    } catch {
+      return false;
+    }
+  },
+
+  /**
+   * Elimina un registro en Supabase
+   */
+  async deleteRow(tableName: string, matchColumn: string, matchValue: any): Promise<boolean> {
+    try {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/${tableName}?${matchColumn}=eq.${encodeURIComponent(String(matchValue))}`, {
+        method: 'DELETE',
+        headers: {
+          'apikey': SUPABASE_ANON_KEY,
+          'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+        },
+      });
+      return res.ok;
+    } catch {
+      return false;
+    }
+  },
+
+  /**
    * Estado de salud en tiempo real de Supabase
    */
   async getHealthStatus(): Promise<{ connected: boolean; url: string; engine: string; tablesCount: number }> {

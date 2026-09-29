@@ -421,11 +421,27 @@ export interface AuditEntry {
   userId: string;
   userName: string;
   userRole: Role;
-  action: "CREAR" | "ACTUALIZAR" | "ELIMINAR" | "CAMBIO_ESTADO" | "CONCILIAR";
+  action: "CREAR" | "ACTUALIZAR" | "ELIMINAR" | "ELIMINAR_CON_OTP" | "RESTAURAR_RESPALDO" | "CAMBIO_ESTADO" | "CONCILIAR";
   module: string;
   entityId: string;
   entityName: string;
   details: string;
   before?: Record<string, any>;
   after?: Record<string, any>;
+}
+
+
+/** Registro de Papelera y Respaldo de Seguridad ante Eliminación (2026-2027) */
+export interface PapeleraItem {
+  id: string; // ej. TRASH-172756...
+  entidad: 'reporte' | 'cotizacion' | 'cliente' | 'contratista' | 'material';
+  idOriginal: string | number;
+  titulo: string;
+  resumen: string;
+  datos: any; // Payload completo de respaldo
+  fechaEliminacion: string;
+  eliminadoPor: string;
+  adminEmailNotificado: string;
+  otpVerificado: string;
+  restaurable: boolean;
 }

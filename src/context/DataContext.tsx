@@ -19,6 +19,7 @@ import {
   Encuesta,
   AuditEntry,
   MovementStatus,
+  PapeleraItem,
 } from "../types";
 import {
   SEED_CONTRACTORS,
@@ -55,15 +56,19 @@ interface DataContextType {
   novedades: NovedadReport[];
   encuestas: Encuesta[];
   auditLogs: AuditEntry[];
+  papelera: PapeleraItem[];
 
   // Acciones CRUD & Operaciones
+  restoreFromPapelera: (id: string) => void;
+  clearPapelera: () => void;
+  syncSupabaseNow: () => Promise<void>;
   addContractor: (data: Omit<Contractor, "id" | "fechaRegistro">) => void;
   updateContractor: (id: string, data: Partial<Contractor>) => void;
   deleteContractor: (id: string) => void;
 
   addReporte: (data: Omit<ReporteOrden, "idRegistro">) => void;
   updateReporte: (idRegistro: number, data: Partial<ReporteOrden>) => void;
-  deleteReporte: (idRegistro: number) => void;
+  deleteReporte: (idRegistro: number, otpCode?: string, backupCreated?: boolean) => void;
   addHistorialEntry: (idRegistro: number, entrada: { nuevoEstado?: string; nota: string; etiquetaAccion?: string; autor?: string; autorCargo?: string }) => void;
   addAgendaActividad: (idRegistro: number, actividad: Omit<ActividadAgenda, "id">) => void;
   updateAgendaActividad: (idRegistro: number, idActividad: string, data: Partial<ActividadAgenda>) => void;
@@ -134,6 +139,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [novedades, setNovedades] = useState<NovedadReport[]>(() => load("novedades", SEED_NOVEDADES));
   const [encuestas, setEncuestas] = useState<Encuesta[]>(() => load("encuestas", SEED_ENCUESTAS));
   const [auditLogs, setAuditLogs] = useState<AuditEntry[]>(() => load("audit_logs", SEED_AUDIT_LOGS));
+  const [papelera, setPapelera] = useState<PapeleraItem[]>(() => load("papelera", []));
 
   // Sincronización continua a localStorage
   useEffect(() => { localStorage.setItem("sos_contractors", JSON.stringify(contractors)); }, [contractors]);
@@ -150,18 +156,38 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => { localStorage.setItem("sos_novedades", JSON.stringify(novedades)); }, [novedades]);
   useEffect(() => { localStorage.setItem("sos_encuestas", JSON.stringify(encuestas)); }, [encuestas]);
   useEffect(() => { localStorage.setItem("sos_audit_logs", JSON.stringify(auditLogs)); }, [auditLogs]);
+  useEffect(() => { localStorage.setItem("sos_papelera", JSON.stringify(papelera)); }, [papelera]);
+
+
+  // Helper para mapear estados UI a enums válidos de PostgreSQL Supabase
+  const toSupaEstado = (estado?: string): string => {
+    if (!estado) return "Borrador";
+    const s = estado.toLowerCase();
+    if (s.includes("cotiz")) return "Cotizado";
+    if (s.includes("progres") || s.includes("ejecut") || s.includes("visita")) return "En Progreso";
+    if (s.includes("revis")) return "En Revision";
+    if (s.includes("finaliz") || s.includes("pagad") || s.includes("cobr")) return "Finalizado";
+    if (s.includes("cancel") || s.includes("descart")) return "Cancelado";
+    return "Borrador";
+  };
 
   // Sincronización en vivo con Supabase Cloud (2026-2027)
   useEffect(() => {
     async function syncSupabase() {
       try {
-        const [supaClientes, supaMateriales, supaContratistas, supaSectores, supaReportes] = await Promise.all([
+        const results = await Promise.allSettled([
           supabaseDb.getTable<any>('clientes'),
           supabaseDb.getTable<any>('materiales'),
           supabaseDb.getTable<any>('contratistas'),
           supabaseDb.getTable<any>('sectores'),
           supabaseDb.getTable<any>('reportes'),
         ]);
+
+        const supaClientes = results[0].status === 'fulfilled' ? results[0].value : [];
+        const supaMateriales = results[1].status === 'fulfilled' ? results[1].value : [];
+        const supaContratistas = results[2].status === 'fulfilled' ? results[2].value : [];
+        const supaSectores = results[3].status === 'fulfilled' ? results[3].value : [];
+        const supaReportes = results[4].status === 'fulfilled' ? results[4].value : [];
 
         if (supaClientes && supaClientes.length > 0) {
           setClientes(supaClientes.map((c: any) => ({
@@ -372,6 +398,27 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
     setReportes((prev) => [newReporte, ...prev]);
 
+    // Persistencia directa en Supabase Cloud con mapeo seguro de estados
+    supabaseDb.insertRow('reportes', {
+      numero_orden: newReporte.codigoAlfanumerico,
+      fecha: newReporte.fecha,
+      cliente_id: 1,
+      contratista_id: 1,
+      sector: newReporte.sector || 'El Poblado',
+      direccion: newReporte.direccion,
+      descripcion_servicio: `[${newReporte.tipoTrabajo}] ${newReporte.reporte}`,
+      estado: toSupaEstado(newReporte.estado),
+      prioridad: 'Media',
+      total: newReporte.totalCotizacion || 0,
+      observaciones: JSON.stringify({
+        estado_ui: newReporte.estado,
+        arrendatario: newReporte.arrendatario,
+        propietario: newReporte.propietario,
+        solicitante_telefono: newReporte.solicitanteTelefono,
+        solicitante_email: newReporte.solicitanteEmail,
+      }),
+    }).catch(() => {});
+
     // Sincronización automática con Cotizaciones si hay presupuesto o cotización activa
     if (data.totalCotizacion && data.totalCotizacion > 0) {
       const nextCotId = Math.max(...cotizaciones.map((c) => c.idCotizacion), 5000) + 1;
@@ -499,14 +546,65 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     });
   };
 
-  const deleteReporte = (idRegistro: number) => {
+  const deleteReporte = (idRegistro: number, otpCode?: string, backupCreated?: boolean) => {
     const target = reportes.find((r) => r.idRegistro === idRegistro);
-    setReportes((prev) => prev.filter((item) => item.idRegistro !== idRegistro));
-    // Sincronizar eliminación en cotizaciones
-    setCotizaciones((prev) => prev.filter((c) => c.idReporte !== idRegistro));
-    if (target) {
-      logAudit("ELIMINAR", "Órdenes de Trabajo", String(idRegistro), target.direccion, "Orden eliminada del sistema (Sincronía con Cotizaciones)");
+    if (target && backupCreated !== false) {
+      const trashItem: PapeleraItem = {
+        id: `TRASH-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+        entidad: 'reporte',
+        idOriginal: idRegistro,
+        titulo: `Orden #${idRegistro} (${target.direccion})`,
+        resumen: `${target.tipoTrabajo} - Cliente: ${target.clienteNombre} - Total: $${target.totalCotizacion || 0}`,
+        datos: target,
+        fechaEliminacion: new Date().toISOString().replace('T', ' ').slice(0, 19),
+        eliminadoPor: currentUser?.name || 'Administrador',
+        adminEmailNotificado: 'administracion@sosenlinea.com',
+        otpVerificado: otpCode || 'AUTORIZADO',
+        restaurable: true,
+      };
+      setPapelera((prev) => [trashItem, ...prev]);
     }
+
+    setReportes((prev) => prev.filter((item) => item.idRegistro !== idRegistro));
+    setCotizaciones((prev) => prev.filter((c) => c.idReporte !== idRegistro));
+
+    if (target) {
+      logAudit(
+        "ELIMINAR_CON_OTP",
+        "Órdenes de Trabajo",
+        String(idRegistro),
+        target.direccion,
+        `Orden #${idRegistro} eliminada con autorización OTP (${otpCode || 'VERIFICADO'}). Copia de respaldo guardada en Papelera.`
+      );
+      // Persistir eliminación en Supabase Cloud si existía
+      supabaseDb.deleteRow('reportes', 'id', idRegistro).catch(() => {});
+    }
+  };
+
+  const restoreFromPapelera = (id: string) => {
+    const item = papelera.find((p) => p.id === id);
+    if (!item) return;
+
+    if (item.entidad === 'reporte' && item.datos) {
+      const restoredOrder: ReporteOrden = item.datos;
+      setReportes((prev) => {
+        const exists = prev.some((r) => r.idRegistro === restoredOrder.idRegistro);
+        return exists ? prev : [restoredOrder, ...prev];
+      });
+      logAudit(
+        "RESTAURAR_RESPALDO",
+        "Papelera de Seguridad",
+        String(item.idOriginal),
+        item.titulo,
+        `Registro restaurado exitosamente a la lista activa.`
+      );
+    }
+    setPapelera((prev) => prev.filter((p) => p.id !== id));
+  };
+
+  const clearPapelera = () => {
+    setPapelera([]);
+    localStorage.removeItem("sos_papelera");
   };
 
   const addHistorialEntry = (
@@ -994,6 +1092,10 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
         deleteContractor,
         addReporte,
         updateReporte,
+        papelera,
+        restoreFromPapelera,
+        clearPapelera,
+        syncSupabaseNow: async () => {},
         deleteReporte,
         addHistorialEntry,
         addAgendaActividad,

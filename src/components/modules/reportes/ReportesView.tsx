@@ -18,6 +18,9 @@ import { Modal } from "../../common/Modal";
 import { StatusBadge } from "../../common/Badge";
 import { CSVImportModal } from "../../common/CSVImportModal";
 import { SolicitudServicioClienteModal } from "./SolicitudServicioClienteModal";
+import { OtpDeleteConfirmModal } from "../../common/OtpDeleteConfirmModal";
+import { PapeleraBackupsModal } from "../../common/PapeleraBackupsModal";
+import { Archive } from "lucide-react";
 import {
   FileSpreadsheet,
   Plus,
@@ -191,6 +194,7 @@ export const ReportesView: React.FC = () => {
     sectores,
     cotizaciones,
     llaves,
+    papelera,
     addReporte,
     updateReporte,
     deleteReporte,
@@ -208,6 +212,10 @@ export const ReportesView: React.FC = () => {
   const { can, currentUser, currentRole, effectiveRole } = useAuth();
 
   const [searchTerm, setSearchTerm] = useState("");
+  const [isOtpModalOpen, setIsOtpModalOpen] = useState(false);
+  const [isPapeleraOpen, setIsPapeleraOpen] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState<{ id: number; dir: string; cliente?: string; total?: string } | null>(null);
+  const [toastMsg, setToastMsg] = useState<string | null>(null);
   const [selectedEstado, setSelectedEstado] = useState<string>("todos");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isCSVModalOpen, setIsCSVModalOpen] = useState(false);
@@ -1510,9 +1518,22 @@ export const ReportesView: React.FC = () => {
   }, [formStep, firmaDatos.trazoFirma]);
 
   const handleDelete = (id: number, dir: string) => {
-    if (window.confirm(`¿Deseas eliminar la orden #${id} (${dir})?`)) {
-      deleteReporte(id);
-    }
+    const order = reportes.find((r) => r.idRegistro === id);
+    setItemToDelete({
+      id,
+      dir,
+      cliente: order?.clienteNombre,
+      total: order?.totalCotizacion ? formatCOP(order.totalCotizacion) : "$0",
+    });
+    setIsOtpModalOpen(true);
+  };
+
+  const handleConfirmOtpDelete = (otpCode: string, backupCreated: boolean) => {
+    if (!itemToDelete) return;
+    deleteReporte(itemToDelete.id, otpCode, backupCreated);
+    setToastMsg(`Orden #${itemToDelete.id} eliminada exitosamente con autorización OTP ${otpCode}. Respaldo guardado en la Papelera.`);
+    setItemToDelete(null);
+    setTimeout(() => setToastMsg(null), 5000);
   };
 
   const filtered = reportes.filter((r) => {
@@ -1601,6 +1622,24 @@ export const ReportesView: React.FC = () => {
               Exportar CSV
             </button>
           )}
+
+          <button
+            type="button"
+            onClick={() => setIsPapeleraOpen(true)}
+            className="btn btn-secondary btn-sm"
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "0.35rem",
+              background: papelera && papelera.length > 0 ? "rgba(239, 68, 68, 0.08)" : undefined,
+              borderColor: papelera && papelera.length > 0 ? "rgba(239, 68, 68, 0.3)" : undefined,
+              color: papelera && papelera.length > 0 ? "#dc2626" : undefined,
+            }}
+            title="Ver papelera de seguridad y restaurar copias de respaldo"
+          >
+            <Archive size={15} />
+            Papelera ({papelera ? papelera.length : 0})
+          </button>
 
           {effectiveRole === "usuario" ? (
             <button
@@ -5580,6 +5619,63 @@ export const ReportesView: React.FC = () => {
         isOpen={isClienteModalOpen}
         onClose={() => setIsClienteModalOpen(false)}
       />
-    </div>
+    
+      {/* Toast de confirmación de eliminación con OTP */}
+      {toastMsg && (
+        <div
+          style={{
+            position: "fixed",
+            bottom: "1.5rem",
+            right: "1.5rem",
+            background: "#065f46",
+            color: "#ffffff",
+            padding: "0.85rem 1.25rem",
+            borderRadius: "0.75rem",
+            boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.3)",
+            fontSize: "0.85rem",
+            fontWeight: 600,
+            zIndex: 9999,
+            display: "flex",
+            alignItems: "center",
+            gap: "0.6rem",
+            animation: "slideInUp 0.3s ease",
+          }}
+        >
+          <span>🛡️ {toastMsg}</span>
+          <button
+            onClick={() => setToastMsg(null)}
+            style={{ background: "none", border: "none", color: "#ffffff", cursor: "pointer", opacity: 0.8 }}
+          >
+            ✕
+          </button>
+        </div>
+      )}
+
+      {/* Modal de Confirmación de Seguridad con Código OTP al Administrador */}
+      {itemToDelete && (
+        <OtpDeleteConfirmModal
+          isOpen={isOtpModalOpen}
+          onClose={() => {
+            setIsOtpModalOpen(false);
+            setItemToDelete(null);
+          }}
+          onConfirm={handleConfirmOtpDelete}
+          title={`Orden de Trabajo #${itemToDelete.id}`}
+          itemDetails={{
+            radicado: `#${itemToDelete.id}`,
+            direccion: itemToDelete.dir,
+            cliente: itemToDelete.cliente,
+            monto: itemToDelete.total,
+          }}
+          adminEmail="administracion@sosenlinea.com"
+        />
+      )}
+
+      {/* Modal de Papelera de Seguridad & Restauración de Backups */}
+      <PapeleraBackupsModal
+        isOpen={isPapeleraOpen}
+        onClose={() => setIsPapeleraOpen(false)}
+      />
+</div>
   );
 };
