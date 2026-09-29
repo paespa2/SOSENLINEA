@@ -271,8 +271,8 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
               tipoTrabajo: sr.descripcion_servicio?.split('|')?.[0]?.replace('[', '')?.trim() || "Mantenimiento General",
               idContratante: String(sr.cliente_id || 'CLI-01'),
               clienteNombre: "Inversiones Santa María",
-              arrendatario: obsData.solicitante_nombre || "Cliente Solicitante",
-              propietario: "Inversiones Santa María",
+              arrendatario: obsData.solicitante_nombre || obsData.arrendatario || "Cliente Solicitante",
+              propietario: obsData.propietario || "Inversiones Santa María",
               direccion: sr.direccion || "Medellín",
               sector: sr.sector || "El Poblado",
               fecha: sr.fecha || new Date().toISOString().slice(0, 10),
@@ -293,9 +293,9 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
           });
 
           setReportes((prev) => {
-            const existingIds = new Set(prev.map((p) => p.idRegistro));
-            const newOnes = mappedReportes.filter((m) => !existingIds.has(m.idRegistro));
-            return [...newOnes, ...prev];
+            const supaIds = new Set(mappedReportes.map((m) => m.idRegistro));
+            const localOnly = prev.filter((p) => !supaIds.has(p.idRegistro));
+            return [...mappedReportes, ...localOnly];
           });
         }
       } catch (e) {
