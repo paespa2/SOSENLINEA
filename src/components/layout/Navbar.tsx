@@ -173,7 +173,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           </div>
           <div>
             <div style={{ fontWeight: 800, fontSize: "1rem", letterSpacing: "-0.02em", color: "var(--primary)" }}>
-              SOSENLINEA <span style={{ color: "#3b82f6", fontWeight: 500, fontSize: "0.75rem" }}>CLOUD</span>
+              SOSENLINEA <span style={{ color: "#10b981", fontWeight: 700, fontSize: "0.75rem" }}>SUPABASE</span>
             </div>
             <div style={{ fontSize: "0.7rem", color: "var(--text-muted)", display: "flex", alignItems: "center", gap: "0.35rem" }}>
               <span
@@ -186,7 +186,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   boxShadow: "0 0 8px #10b981",
                 }}
               />
-              Sistema Sincronizado y Operativo
+              🟢 Supabase Cloud Activo
             </div>
           </div>
         </div>

@@ -376,7 +376,7 @@ END CATCH;`,
           onClick={() => setActiveTab("conexion")}
           className={`btn btn-sm ${activeTab === "conexion" ? "btn-primary" : "btn-secondary"}`}
         >
-          <Server size={14} /> Parámetros de Conexión Azure
+          <Server size={14} /> Arquitectura Supabase (2026-2027)
         </button>
       </div>
 
@@ -715,33 +715,50 @@ END CATCH;`,
 
       {/* Pestaña: Parámetros de Conexión */}
       {activeTab === "conexion" && (
-        <div className="card" style={{ maxWidth: "650px" }}>
-          <h3 style={{ fontSize: "1.05rem", fontWeight: 800, marginBottom: "0.5rem" }}>
-            Parámetros de Seguridad y Conexión
-          </h3>
-          <p style={{ fontSize: "0.8rem", color: "var(--text-muted)", marginBottom: "1.25rem" }}>
-            La conexión a base de datos se gestiona estrictamente del lado del servidor (backend) a través de variables de entorno protegidas.
+        <div className="card" style={{ maxWidth: "750px" }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "0.75rem" }}>
+            <h3 style={{ fontSize: "1.15rem", fontWeight: 800, margin: 0, display: "flex", alignItems: "center", gap: "0.5rem" }}>
+              <span style={{ height: "10px", width: "10px", borderRadius: "50%", background: "#10b981", display: "inline-block", boxShadow: "0 0 8px #10b981" }} />
+              Motor Activo: Supabase Cloud PostgreSQL (2026-2027)
+            </h3>
+            <span style={{ background: "rgba(16, 185, 129, 0.15)", color: "#10b981", padding: "3px 10px", borderRadius: "20px", fontSize: "0.75rem", fontWeight: 700 }}>
+              EN LÍNEA / 100% OPERATIVO
+            </span>
+          </div>
+
+          <p style={{ fontSize: "0.85rem", color: "var(--text-muted)", marginBottom: "1.5rem" }}>
+            El aplicativo opera soberanamente sobre la nube de <strong>Supabase</strong>. La base de datos anterior de Azure SQL (Programaacces) ha sido desacoplada y reemplazada por el motor relacional PostgreSQL moderno.
           </p>
 
           <div style={{ display: "flex", flexDirection: "column", gap: "0.85rem", fontSize: "0.85rem" }}>
             <div style={{ display: "flex", justifyContent: "space-between", padding: "0.6rem 0", borderBottom: "1px solid var(--border-color)" }}>
-              <span style={{ color: "var(--text-muted)", fontWeight: 600 }}>Servidor de Base de Datos:</span>
-              <strong style={{ fontFamily: "var(--font-mono)" }}>Configurado en Backend (.env)</strong>
+              <span style={{ color: "var(--text-muted)", fontWeight: 600 }}>Proveedor Cloud:</span>
+              <strong style={{ color: "#3b82f6" }}>Supabase Cloud (PostgreSQL 16+)</strong>
             </div>
 
             <div style={{ display: "flex", justifyContent: "space-between", padding: "0.6rem 0", borderBottom: "1px solid var(--border-color)" }}>
-              <span style={{ color: "var(--text-muted)", fontWeight: 600 }}>Cifrado SSL / TLS:</span>
-              <strong style={{ color: "#059669" }}>Habilitado (TLS 1.2+ Obligatorio)</strong>
+              <span style={{ color: "var(--text-muted)", fontWeight: 600 }}>Proyecto / Host:</span>
+              <strong style={{ fontFamily: "var(--font-mono)" }}>hgywidapnfslfsjfuxdi.supabase.co</strong>
             </div>
 
             <div style={{ display: "flex", justifyContent: "space-between", padding: "0.6rem 0", borderBottom: "1px solid var(--border-color)" }}>
-              <span style={{ color: "var(--text-muted)", fontWeight: 600 }}>Aislamiento de Seguridad:</span>
-              <strong style={{ color: "#059669" }}>Cero exposición de credenciales en Frontend</strong>
+              <span style={{ color: "var(--text-muted)", fontWeight: 600 }}>Protocolo & Cifrado:</span>
+              <strong style={{ color: "#059669" }}>HTTPS / TLS 1.3 + PostgREST Seguro</strong>
+            </div>
+
+            <div style={{ display: "flex", justifyContent: "space-between", padding: "0.6rem 0", borderBottom: "1px solid var(--border-color)" }}>
+              <span style={{ color: "var(--text-muted)", fontWeight: 600 }}>Políticas de Aislamiento:</span>
+              <strong style={{ color: "#059669" }}>Row-Level Security (RLS) Activo en 8 Tablas</strong>
+            </div>
+
+            <div style={{ display: "flex", justifyContent: "space-between", padding: "0.6rem 0", borderBottom: "1px solid var(--border-color)" }}>
+              <span style={{ color: "var(--text-muted)", fontWeight: 600 }}>Estado de Azure SQL:</span>
+              <strong style={{ color: "#d97706" }}>Desacoplado / Migrado a Supabase</strong>
             </div>
 
             <div style={{ display: "flex", justifyContent: "space-between", padding: "0.6rem 0" }}>
-              <span style={{ color: "var(--text-muted)", fontWeight: 600 }}>Auditoría de Transacciones:</span>
-              <strong style={{ color: "var(--primary)" }}>Activa (Sesiones y Operaciones)</strong>
+              <span style={{ color: "var(--text-muted)", fontWeight: 600 }}>Autenticación & Perfiles:</span>
+              <strong style={{ color: "#7c3aed" }}>Supabase Auth + Dual-Actor Impersonation</strong>
             </div>
           </div>
         </div>

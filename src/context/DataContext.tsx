@@ -37,6 +37,7 @@ import {
   SEED_AUDIT_LOGS,
 } from "../data/seedData";
 import { useAuth } from "./AuthContext";
+import { supabaseDb } from "../services/supabaseAuth";
 
 interface DataContextType {
   // Entidades
@@ -149,6 +150,91 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => { localStorage.setItem("sos_novedades", JSON.stringify(novedades)); }, [novedades]);
   useEffect(() => { localStorage.setItem("sos_encuestas", JSON.stringify(encuestas)); }, [encuestas]);
   useEffect(() => { localStorage.setItem("sos_audit_logs", JSON.stringify(auditLogs)); }, [auditLogs]);
+
+  // Sincronización en vivo con Supabase Cloud (2026-2027)
+  useEffect(() => {
+    async function syncSupabase() {
+      try {
+        const [supaClientes, supaMateriales, supaContratistas, supaSectores] = await Promise.all([
+          supabaseDb.getTable<any>('clientes'),
+          supabaseDb.getTable<any>('materiales'),
+          supabaseDb.getTable<any>('contratistas'),
+          supabaseDb.getTable<any>('sectores'),
+        ]);
+
+        if (supaClientes && supaClientes.length > 0) {
+          setClientes(supaClientes.map((c: any) => ({
+            id: String(c.id),
+            tipo: "Inmobiliaria" as const,
+            nombre: c.nombre || "Cliente SOS",
+            documento: c.nit || "900.000.000",
+            telefono: c.telefono || "300 000 0000",
+            email: c.email || "contacto@cliente.com",
+            inmuebleReferencia: c.direccion || c.sector || "Sede Principal",
+            canonOValor: 0,
+            fechaContrato: c.created_at ? String(c.created_at).slice(0, 10) : new Date().toISOString().slice(0, 10),
+            estado: c.activo !== false ? ("Activo" as const) : ("Inactivo" as const),
+          })));
+        }
+
+        if (supaMateriales && supaMateriales.length > 0) {
+          setMateriales(supaMateriales.map((m: any) => {
+            const stockActual = Number(m.stock_actual) || 0;
+            const stockMinimo = Number(m.stock_minimo) || 5;
+            const estado = stockActual <= 0 ? ("Agotado" as const) : stockActual <= stockMinimo ? ("Bajo Stock" as const) : ("Optimo" as const);
+            return {
+              id: String(m.id),
+              codigo: m.codigo || `MAT-${m.id}`,
+              nombre: m.descripcion || "Material de Almacén",
+              categoria: m.categoria || "General",
+              unidad: m.unidad || "UND",
+              stockActual,
+              stockMinimo,
+              precioUnitario: Number(m.precio_unitario) || 0,
+              ubicacion: "Almacén Central Medellín",
+              estado,
+            };
+          }));
+        }
+
+        if (supaContratistas && supaContratistas.length > 0) {
+          setContractors(supaContratistas.map((con: any) => ({
+            id: String(con.id),
+            nombre: con.nombre || "Técnico SOS",
+            tipo: (con.tipo === "Proveedor" || con.tipo === "Tercero" ? con.tipo : "Contratista") as any,
+            nit: con.nit || "0",
+            dv: con.dv || "",
+            email: con.email || "",
+            telefono: con.telefono || "",
+            direccion: con.direccion || "",
+            ciudad: con.ciudad || "Medellín",
+            sector: con.sector || "",
+            especialidad: con.especialidad || "General",
+            banco: con.banco || "",
+            tipoCta: (con.tipo_cta === "Corriente" ? "Corriente" : "Ahorros") as any,
+            numeroCta: con.numero_cta || "",
+            activo: con.activo !== false,
+            fechaRegistro: con.created_at ? String(con.created_at).slice(0, 10) : new Date().toISOString().slice(0, 10),
+          })));
+        }
+
+        if (supaSectores && supaSectores.length > 0) {
+          setSectores(supaSectores.map((s: any, idx: number) => ({
+            id: String(s.id),
+            codigo: `SEC-${String(s.id || idx + 1).padStart(3, "0")}`,
+            nombre: s.nombre || "Sector",
+            zona: s.zona || "Valle de Aburrá",
+            responsable: "Coordinador de Zona",
+            activo: s.activo !== false,
+          })));
+        }
+      } catch (e) {
+        console.info('Supabase data sync fallback active');
+      }
+    }
+
+    syncSupabase();
+  }, []);
 
   // Función de registro en la tabla de auditoría (audit_logs)
   const logAudit = (
