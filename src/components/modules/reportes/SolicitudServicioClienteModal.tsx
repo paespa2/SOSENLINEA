@@ -1,3 +1,4 @@
+import { SmartTextEditor } from '../../common/SmartTextEditor';
 import React, { useState } from 'react';
 import { useData } from '../../../context/DataContext';
 import { useAuth } from '../../../context/AuthContext';
@@ -844,21 +845,15 @@ export const SolicitudServicioClienteModal: React.FC<SolicitudServicioClienteMod
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, marginBottom: '0.35rem' }}>
-                    Descripción Detallada del Problema o Necesidad *
-                  </label>
-                  <textarea
-                    required
-                    rows={3}
-                    placeholder="Describe con claridad la falla: por ejemplo, fuga de agua en el sifón del lavamanos principal, daño en cerradura de entrada, cortocircuito en habitación..."
+                  <SmartTextEditor
+                    label="Descripción Detallada del Problema o Necesidad"
                     value={reporte}
-                    onChange={(e) => setReporte(e.target.value)}
-                    className="input-field"
-                    style={{ width: '100%', fontSize: '0.85rem', lineHeight: 1.5 }}
+                    onChange={(val: string) => setReporte(val)}
+                    placeholder="Describe con claridad la falla: por ejemplo, fuga de agua en el sifón del lavamanos principal, daño en cerradura de entrada, cortocircuito en habitación..."
+                    rows={3}
+                    required
+                    hint="Usa el botón ✨ Autocorregir para ortografía técnica y las plantillas para agilizar."
                   />
-                  <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
-                    Entre más detalles brindes, más rápido podremos despachar la cuadrilla y los materiales exactos.
-                  </span>
                 </div>
               </div>
 

@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { Modal } from "./Modal";
+import { DigitalSignatureModal } from "./DigitalSignatureModal";
+import { DigitalSignatureData } from "../../types";
 import {
   User,
   Shield,
@@ -18,6 +20,8 @@ import {
   Server,
   LogOut,
   Clock,
+  PenTool,
+  Trash2,
 } from "lucide-react";
 
 interface UserProfileModalProps {
@@ -28,7 +32,8 @@ interface UserProfileModalProps {
 export const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onClose }) => {
   const { currentUser, currentRole, permissions, updateProfile, changePassword, logout } = useAuth();
 
-  const [activeTab, setActiveTab] = useState<"perfil" | "seguridad" | "arquitectura">("perfil");
+  const [activeTab, setActiveTab] = useState<"perfil" | "firma" | "seguridad" | "arquitectura">("perfil");
+  const [showSigModal, setShowSigModal] = useState(false);
 
   // Formulario Perfil
   const [nombre, setNombre] = useState(currentUser?.name || "");
@@ -67,6 +72,26 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onCl
   };
 
   const strength = passwordStrength(nextPassword);
+
+    const handleSaveSignature = async (sigData: DigitalSignatureData) => {
+    await updateProfile({
+      name: currentUser?.name || '',
+      firmaDigital: sigData.firmaUrl,
+    });
+    setPerfilMsg({ tipo: 'success', texto: 'Firma digital registrada y vinculada a tu perfil exitosamente.' });
+    setTimeout(() => setPerfilMsg(null), 3500);
+  };
+
+  const handleClearSignature = async () => {
+    if (window.confirm('¿Deseas eliminar tu firma digital guardada de este dispositivo?')) {
+      await updateProfile({
+        name: currentUser?.name || '',
+        firmaDigital: '',
+      });
+      setPerfilMsg({ tipo: 'success', texto: 'Firma digital eliminada.' });
+      setTimeout(() => setPerfilMsg(null), 3000);
+    }
+  };
 
   const handleSaveProfile = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -239,6 +264,31 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onCl
             Datos Personales
           </button>
 
+                    <button
+            type="button"
+            onClick={() => setActiveTab("firma")}
+            style={{
+              padding: "0.5rem 0.85rem",
+              fontSize: "0.8rem",
+              fontWeight: activeTab === "firma" ? 800 : 600,
+              color: activeTab === "firma" ? "var(--primary)" : "var(--text-muted)",
+              borderBottom: activeTab === "firma" ? "2px solid var(--primary)" : "2px solid transparent",
+              background: "transparent",
+              borderTop: "none",
+              borderLeft: "none",
+              borderRight: "none",
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              gap: "0.35rem",
+            }}
+          >
+            <PenTool size={14} />
+            <span>Firma Digital</span>
+            {currentUser?.firmaDigital && (
+              <span style={{ width: 6, height: 6, borderRadius: "50%", background: "var(--success)" }} />
+            )}
+          </button>
           <button
             type="button"
             onClick={() => setActiveTab("seguridad")}
@@ -561,6 +611,18 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onCl
           </div>
         )}
       </div>
+    
+      {showSigModal && (
+        <DigitalSignatureModal
+          isOpen={showSigModal}
+          onClose={() => setShowSigModal(false)}
+          onSaveSignature={handleSaveSignature}
+          defaultUserName={currentUser?.name || ''}
+          defaultRole={currentRole}
+          savedDefaultSignature={currentUser?.firmaDigital}
+        />
+      )}
+
     </Modal>
   );
 };

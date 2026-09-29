@@ -1,3 +1,13 @@
+export interface DigitalSignatureData {
+  firmaUrl: string;
+  firmanteNombre: string;
+  firmanteRol: string;
+  firmanteDoc?: string;
+  fechaHora: string;
+  hashSello: string;
+  tipo: 'manuscrita' | 'certificada' | 'archivo';
+}
+
 export type Role = "admin" | "auxiliar" | "maestros" | "contable" | "campo" | "usuario" | "desarrollador";
 
 export interface User {
@@ -9,6 +19,7 @@ export interface User {
   cargo?: string;
   telefono?: string;
   selloDigital?: string;
+  firmaDigital?: string;
   username?: string;
 }
 
@@ -191,6 +202,9 @@ export interface ReporteOrden {
   fechaTerminado?: string;
   fechaAprobada?: string;
   totalCotizacion: number;
+  firmaTecnico?: DigitalSignatureData;
+  firmaCliente?: DigitalSignatureData;
+  firmaAprobador?: DigitalSignatureData;
   tasaAvance: number; // 0 a 1 (0% a 100%)
   tareasPendientes?: number;
   ultimoActualizado?: string;

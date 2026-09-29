@@ -20,7 +20,10 @@ import { CSVImportModal } from "../../common/CSVImportModal";
 import { SolicitudServicioClienteModal } from "./SolicitudServicioClienteModal";
 import { OtpDeleteConfirmModal } from "../../common/OtpDeleteConfirmModal";
 import { PapeleraBackupsModal } from "../../common/PapeleraBackupsModal";
-import { Archive } from "lucide-react";
+import { SmartTextEditor } from "../../common/SmartTextEditor";
+import { DigitalSignatureModal } from "../../common/DigitalSignatureModal";
+import { DigitalSignatureData } from "../../../types";
+import { Archive , Zap, CheckCircle2} from "lucide-react";
 import {
   FileSpreadsheet,
   Plus,
@@ -214,6 +217,7 @@ export const ReportesView: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [isOtpModalOpen, setIsOtpModalOpen] = useState(false);
   const [isPapeleraOpen, setIsPapeleraOpen] = useState(false);
+  const [isSignatureModalOpen, setIsSignatureModalOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<{ id: number; dir: string; cliente?: string; total?: string } | null>(null);
   const [toastMsg, setToastMsg] = useState<string | null>(null);
   const [selectedEstado, setSelectedEstado] = useState<string>("todos");
@@ -1181,6 +1185,65 @@ export const ReportesView: React.FC = () => {
       hashCertificado: "",
       fechaFirma: "",
     }));
+  };
+
+    // Aplicar firma predeterminada guardada del usuario en 1 clic
+  const handleApplyUserSavedSignature = () => {
+    if (!currentUser?.firmaDigital) {
+      alert("No tienes una firma digital guardada en tu perfil. Abre tu perfil para registrarla.");
+      return;
+    }
+    const now = new Date();
+    const dateFormatted = `${now.toISOString().slice(0, 10)} ${now.toLocaleTimeString("es-CO")}`;
+    const hash = `SOS-SIG-${currentRole.toUpperCase()}-${Date.now().toString(16).toUpperCase()}`;
+
+    const updatedFirma: FirmaElectronica = {
+      firmante: currentUser.name,
+      documento: currentUser.telefono || "C.C. Verificada",
+      rol: currentRole === "admin" ? "Dirección General / Administrador" : currentRole === "campo" ? "Técnico de Campo" : currentRole,
+      fechaFirma: dateFormatted,
+      trazoFirma: currentUser.firmaDigital,
+      hashCertificado: hash,
+    };
+
+    setFirmaDatos(updatedFirma);
+
+    if (activeCotizacion) {
+      const updatedCot = {
+        ...activeCotizacion,
+        firmaElectronica: updatedFirma,
+        estado: "Aprobada" as const,
+      };
+      setActiveCotizacion(updatedCot);
+      updateCotizacion(updatedCot.idCotizacion, updatedCot);
+    }
+    setFeedbackSuccess("Firma digital vinculada y certificada exitosamente.");
+    setTimeout(() => setFeedbackSuccess(null), 3500);
+  };
+
+  const handleSignatureModalSave = (sigData: DigitalSignatureData) => {
+    const updatedFirma: FirmaElectronica = {
+      firmante: sigData.firmanteNombre,
+      documento: sigData.firmanteDoc || "Documento Verificado",
+      rol: sigData.firmanteRol,
+      fechaFirma: new Date().toLocaleString("es-CO"),
+      trazoFirma: sigData.firmaUrl,
+      hashCertificado: sigData.hashSello,
+    };
+
+    setFirmaDatos(updatedFirma);
+
+    if (activeCotizacion) {
+      const updatedCot = {
+        ...activeCotizacion,
+        firmaElectronica: updatedFirma,
+        estado: "Aprobada" as const,
+      };
+      setActiveCotizacion(updatedCot);
+      updateCotizacion(updatedCot.idCotizacion, updatedCot);
+    }
+    setFeedbackSuccess("Firma digital capturada y estampada exitosamente.");
+    setTimeout(() => setFeedbackSuccess(null), 3500);
   };
 
   const handleCertifySignature = () => {
@@ -3420,18 +3483,19 @@ export const ReportesView: React.FC = () => {
               </div>
 
               {/* Descripción Detallada */}
-              <div className="input-group" style={{ margin: 0 }}>
-                <label className="input-label">Descripción Detallada del Trabajo o Novedad *</label>
-                <textarea
-                  rows={3}
-                  placeholder="Describa el trabajo a realizar, diagnóstico o novedad..."
+              <div style={{ margin: 0 }}>
+                <SmartTextEditor
+                  label="Descripción Detallada del Trabajo o Novedad"
                   value={formData.reporte}
-                  onChange={(e) => {
-                    setFormData({ ...formData, reporte: e.target.value });
+                  onChange={(val) => {
+                    setFormData({ ...formData, reporte: val });
                     setFormError(null);
                   }}
-                  className="textarea-field"
+                  placeholder="Describa el trabajo a realizar, diagnóstico técnico o novedad con precisión..."
+                  rows={3}
                   required
+                  error={formError || undefined}
+                  hint="Usa el botón ✨ Autocorregir para ortografía técnica y el menú de Plantillas para acelerar la redacción."
                 />
               </div>
 
@@ -5672,6 +5736,20 @@ export const ReportesView: React.FC = () => {
       )}
 
       {/* Modal de Papelera de Seguridad & Restauración de Backups */}
+            {/* Modal Asistente de Firma Digital Multi-Rol */}
+      {isSignatureModalOpen && (
+        <DigitalSignatureModal
+          isOpen={isSignatureModalOpen}
+          onClose={() => setIsSignatureModalOpen(false)}
+          onSaveSignature={handleSignatureModalSave}
+          defaultUserName={currentUser?.name || firmaDatos.firmante || "Usuario"}
+          defaultRole={currentRole}
+          savedDefaultSignature={currentUser?.firmaDigital}
+          title={`Firma Digital para Orden #${currentOrderId}`}
+          descripcion={`Certificación electrónica vinculada al rol ${currentRole.toUpperCase()} para la orden ${formData.direccion}.`}
+        />
+      )}
+
       <PapeleraBackupsModal
         isOpen={isPapeleraOpen}
         onClose={() => setIsPapeleraOpen(false)}

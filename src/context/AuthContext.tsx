@@ -37,7 +37,7 @@ interface AuthContextType {
   verifyOtp: (emailOrUsername: string, otp: string) => Promise<{ valid: boolean; message: string }>;
   resetPassword: (emailOrUsername: string, otp: string, newPassword: string) => Promise<{ success: boolean; message: string }>;
   changePassword: (currentPassword: string, newPassword: string) => Promise<{ success: boolean; message: string }>;
-  updateProfile: (data: { name: string; email?: string; cargo?: string; telefono?: string }) => Promise<{ success: boolean; message: string }>;
+  updateProfile: (data: { name: string; email?: string; cargo?: string; telefono?: string; firmaDigital?: string }) => Promise<{ success: boolean; message: string }>;
   canAccessModule: (moduleId: ModuleId) => boolean;
   can: (action: "create" | "edit" | "delete" | "export" | "audit" | "reconcile") => boolean;
 }
@@ -144,7 +144,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       Object.values(AUTHORIZED_USERS).find((u) => u.name === apiUser.name || u.role === role)?.email ||
       `${apiUser.username}@sosenlinea.com`;
 
-    let savedProfile: { name?: string; cargo?: string; email?: string; telefono?: string } = {};
+    let savedProfile: { name?: string; cargo?: string; email?: string; telefono?: string; firmaDigital?: string } = {};
     try {
       const str = localStorage.getItem(`sos_profile_${apiUser.id}`);
       if (str) savedProfile = JSON.parse(str);
@@ -157,6 +157,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       cargo: savedProfile.cargo || INITIAL_ROLES_PERMISSIONS[role]?.label || (role === "admin" ? "Administrador" : role === "desarrollador" ? "Desarrollador" : role === "auxiliar" ? "Auxiliar Administrativo" : apiUser.role),
       email: savedProfile.email || userEmail,
       telefono: savedProfile.telefono || "300 456 7890",
+      firmaDigital: savedProfile.firmaDigital || undefined,
       selloDigital: `SOS-SIG-${String(apiUser.id).padStart(4, "0")}-${role.toUpperCase()}`,
     };
     setCurrentUser(user);
